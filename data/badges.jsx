@@ -1,0 +1,15 @@
+export const badges = [
+    { type: 'Newbie', id: '1', title: 'Log a Task', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Newbie', id: '2', title: 'Log an Event', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Newbie', id: '3', title: 'Complete a Task', isWon: true, isActive: true, dateEarned: '2025-04-01T12:00:00Z', isFavourite: false },
+    { type: 'Social', id: '4', title: 'Invite a StudyBuddy to a Task', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Social', id: '5', title: 'Be Invited by a StudyBuddy to an Event', isWon: true, isActive: false, dateEarned: '2025-04-04T12:00:00Z', isFavourite: false },
+    { type: 'Social', id: '13', title: 'Make a StudyBuddy', isWon: true, isActive: false, dateEarned: '2025-04-07T12:00:00Z', isFavourite: false },
+    { type: 'Committed', id: '6', title: 'Reach a 3 days streak', isWon: true, isActive: false, dateEarned: '2025-04-02T09:30:00Z', isFavourite: false },
+    { type: 'Committed', id: '7', title: 'Reach a 10 days streak', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Leader', id: '8', title: 'Intermediate', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Leader', id: '9', title: 'Finish the week in 3rd place', isWon: true, isActive: true, dateEarned: '2025-04-03T17:45:00Z', isFavourite: false },
+    { type: 'Social', id: '10', title: 'Complete a Common Task', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Leader', id: '11', title: 'Finish the week in 2nd place', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Leader', id: '12', title: 'Finish the week in 1st place', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+];
