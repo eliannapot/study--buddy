@@ -1,10 +1,10 @@
-import {View, Text, TouchableOpacity, StyleSheet, Image, FlatList} from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import TaskItem from './TaskItem';
 
-import plusIcon from '../assets/images/plus.png';
-import colors from '../app/config/colors';
 import { useRouter } from 'expo-router';
+import colors from '../app/config/colors';
+import plusIcon from '../assets/images/plus.png';
 
 const TasksContainer = ({tasks}) => {
 
@@ -25,7 +25,7 @@ const TasksContainer = ({tasks}) => {
             <View>
                 <FlatList
                         data = {tasks}
-                        keyExtractor={(item) => item.$id.toString()}
+                        keyExtractor={(item) => item.id.toString()}
                         renderItem={
                             ({item}) => <TaskItem task={item}  />
                         }      

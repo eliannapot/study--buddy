@@ -1,6 +1,6 @@
 export const tasks = [
     {
-        task_id: "1",
+        id: "1",
         title: "Lab Assignment",
         category: "Physics",
         dueDate: "2025-05-03T12:30:00",
@@ -11,7 +11,7 @@ export const tasks = [
         repetition: "Weekly",
     },
     {
-        task_id: "2",
+        id: "2",
         title: "Exercise",
         category: "Maths",
         dueDate: "2025-05-11T12:30:00",
@@ -22,7 +22,7 @@ export const tasks = [
         repetition: null,
     },
     {
-        task_id: "3",
+        id: "3",
         title: "Assignment",
         category: "Electronics",
         dueDate: "2025-05-07T12:30:00",
@@ -33,7 +33,7 @@ export const tasks = [
         repetition: "Monthly",
     },
     {
-        task_id: "4",
+        id: "4",
         title: "Ajfiagnment",
         category: "Maths",
         dueDate: "2025-05-04T12:30:00",
@@ -45,7 +45,7 @@ export const tasks = [
         studyBuddy: "Jas",
     },
     {
-        task_id: "14",
+        id: "14",
         title: "ZZgnment",
         category: "Physics",
         dueDate: "2025-05-04T12:30:00",
@@ -57,7 +57,7 @@ export const tasks = [
         studyBuddy: "Jas",
     },
     {
-        task_id: "5",
+        id: "5",
         title: "Project Proposal",
         category: "Thesis",
         dueDate: "2025-05-02T14:00:00",
@@ -68,7 +68,7 @@ export const tasks = [
         repetition: null,
     },
     {
-        task_id: "6",
+        id: "6",
         title: "Reading Assignment",
         category: "Physics",
         dueDate: "2025-05-06T18:00:00",
@@ -80,7 +80,7 @@ export const tasks = [
         studyBuddy: "Marnie",
     },
     {
-        task_id: "7",
+        id: "7",
         title: "Prepare Meeting",
         category: "Physics",
         dueDate: "2025-05-09T15:00:00",
@@ -92,7 +92,7 @@ export const tasks = [
         studyBuddy: "Marnie",
     },
     {
-        task_id: "8",
+        id: "8",
         title: "Code Refactor",
         category: "Software Engineering",
         dueDate: "2025-05-12T23:59:00",
@@ -104,7 +104,7 @@ export const tasks = [
         studyBuddy: null,
     },
     {
-        task_id: "9",
+        id: "9",
         title: "Quiz Preparation",
         category: "Maths",
         dueDate: "2025-05-13T08:00:00",
@@ -115,7 +115,7 @@ export const tasks = [
         repetition: null,
     },
     {
-        task_id: "10",
+        id: "10",
         title: "Poster Design",
         category: "Art",
         dueDate: "2025-05-15T16:30:00",

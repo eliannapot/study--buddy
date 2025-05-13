@@ -1,10 +1,10 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useTasks } from "../contexts/TaskContext";
 
 import colors from '../app/config/colors';
-import TaskModal from './TaskModal'; 
+import TaskModal from './TaskModal';
 
 const TaskItem = ({ task }) => {
 
