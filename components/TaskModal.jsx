@@ -1,0 +1,221 @@
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from "react-native";
+import Modal from "react-native-modal";
+import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+
+import colors from "../app/config/colors";
+import candy from "../assets/images/candy.png";
+import { Picker } from "@react-native-picker/picker";
+
+const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
+    if (!task) 
+        return null; 
+
+    const formatReminderDateTime = (dateString) => {
+        const date = new Date(dateString);
+      
+        const day = date.getDate().toString().padStart(2, '0');     // 2-digit day
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 2-digit month
+        const hours = date.getHours().toString().padStart(2, '0');   // 2-digit hour
+        const minutes = date.getMinutes().toString().padStart(2, '0'); // 2-digit minute
+      
+        return `${day}/${month} @ ${hours}:${minutes}`;
+    };
+
+    const [taskStatus, setTaskStatus] = useState(task.status);
+
+    return (      
+    <Modal
+      isVisible={visible}
+      onBackdropPress={onClose}
+      onDelete={onDelete}
+      style={styles.modalContainer}
+      animationIn="zoomIn"
+      animationOut="zoomOut"
+    >
+        <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={onClose}>
+                <FontAwesome name="caret-left" size={35} color="white" style={{ marginLeft: 15 }} />
+            </TouchableOpacity>
+            <View style={{ flexDirection: "row"}}>
+                <TouchableOpacity onPress={onEdit}>
+                    <Feather name="edit" size={30} color="white" style={{ marginRight: 15 }} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={onDelete}>
+                    <Ionicons name="trash" size={30} color="white" style={{ marginRight: 15 }} />
+                </TouchableOpacity>
+            </View>
+        </View>
+
+        <View style={ styles.modalContent }>
+            <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent:"space-between",  marginBottom: 10 }}>
+                <View style={{ flex: 1, marginRight: 10 }}>
+                    <Text style={styles.taskTitle}>{task.title}</Text>
+                </View>
+                <View>
+                    <View style={styles.categoryView}> 
+                        <Text style={styles.taskCategoryDue}>#{task?.categories?.name || "None" || "None"}</Text>
+                    </View>
+                    <Text style={styles.taskCategoryDue}>
+                        Due: {new Date(task.dueDate).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit" })}         
+                    </Text>
+                    <ImageBackground 
+                        source={candy} 
+                        style={styles.candyIcon} 
+                        imageStyle={styles.candyImage}>
+                            <Text style={styles.taskXP}>{task.xp} XP</Text>
+                    </ImageBackground>
+                </View>
+            </View>
+
+            {task.details && (
+            <View >
+                <Text style={styles.groupTitle}>Details:</Text>
+                <Text style={styles.groupDetails}>{task.details}</Text>
+            </View>
+            )}
+
+            {task.repetition && (
+            <View style={styles.groupRow}>
+                <FontAwesome6 name="repeat" size={25} style={{ marginRight: 10 }} />
+                <Text style={styles.groupTitle}>Repeats:</Text>
+                <Text style={styles.groupDetails}>{task.repetition }</Text>
+            </View>
+            )}
+
+            {task.reminder && (
+            <View style={styles.groupRow}>
+                <FontAwesome6 name="bell" size={25} style={{ marginRight: 10 }} />
+                <Text style={styles.groupTitle}>Reminder:</Text>
+                <Text style={styles.groupDetails}>{formatReminderDateTime(task.reminder)}</Text>
+            </View>
+            )}
+
+            
+            {task.studyBuddy && (
+            <View style={styles.groupRow}>
+                <Ionicons name="people" size={25} style={{ marginRight: 10 }} />
+                <Text style={styles.groupTitle}>StudyBuddy:</Text>
+                <Text style={styles.groupDetails}>{task.studyBuddy}</Text>
+            </View>
+            )}
+
+            <View style={styles.groupRow}>
+                <Feather name="loader" size={25} style={{ marginRight: 10 }} />
+                <Text style={styles.groupTitle}>Status:</Text>
+                {/* <TouchableOpacity style={styles.statusButton}>
+                    <Text style={styles.groupDetails}>{task.status}</Text>
+                    <FontAwesome6 name="caret-down" size={25} color={colors.primary} style={{ marginLeft: 15}} />
+                </TouchableOpacity> */}
+                <View style={styles.pickerContainer}>
+                    <Picker selectedValue={taskStatus} onValueChange={(value) => setTaskStatus(value)} dropdownIconColor={colors.primary}>
+                        <Picker.Item label="Not Started" value="Not Started" style={styles.pickerText}/>
+                        <Picker.Item label="In Progress" value="In Progress" style={styles.pickerText}/>
+                        <Picker.Item label="Done" value="Done" style={styles.pickerText}/>
+                    </Picker>
+                </View>
+            </View>
+            
+        </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+    modalContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalHeader: {
+        width: "100%",
+        height: 50,
+        backgroundColor: colors.primary,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "row",
+    },
+    modalContent: {
+        width: "100%",
+        backgroundColor: colors.lightbackground,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        padding: 10,
+    },
+    taskTitle: {
+        fontFamily: "LailaBold",
+        fontSize: 23,
+        flexWrap: "wrap",
+        flexShrink: 1, 
+        numberOfLines: 2,
+        ellipsizeMode: "tail", 
+        textAlign: "left",
+    },
+    categoryView: {
+        borderWidth: 0.5,
+        paddingVertical: 3,
+        paddingHorizontal: 6,
+        backgroundColor: colors.secondary,
+        margin: 5,
+        alignSelf: "flex-start",
+    },
+    taskCategoryDue: {
+        fontSize: 16,
+        fontFamily: 'InterRegular',
+    },
+    // Container for the candy background
+    candyIcon: {
+        width: 42,  // Set explicit dimensions
+        height: 40,
+        justifyContent: 'center',  
+        alignItems: 'center',
+    },
+    // Controls how the candy image scales inside ImageBackground
+    candyImage: {
+        resizeMode: 'contain',  // Ensures the whole candy fits
+        width: '100%',         // Stretch to fill container
+        height: '100%',
+    },
+    taskXP: {
+        fontFamily: "InterMedium",
+        fontSize: 17,
+    },
+    groupRow: {
+        marginVertical: 5,
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    groupTitle: {
+        fontFamily: "InterSemiBold",
+        fontSize: 16,
+        marginRight: 10,
+    },
+    groupDetails: {
+        fontFamily: "InterRegular",
+        fontSize: 15,
+        flexWrap: "wrap",
+        flexShrink: 1, 
+        numberOfLines: 1,
+        ellipsizeMode: "tail", 
+        color: colors.blueText,
+    },
+    pickerContainer: {
+        flex: 1,
+        backgroundColor: colors.hexToRGBA(colors.primary, 0.1),
+        borderRadius: 20,
+        borderWidth: 0.5,
+        justifyContent: "space-between",
+    },
+    pickerText: {
+        fontFamily: "InterRegular",
+        fontSize: 15,
+        flexWrap: "wrap",
+        flexShrink: 1, 
+        numberOfLines: 1,
+        ellipsizeMode: "tail", 
+        color: colors.blueText,
+    },
+});
+
+export default TaskModal;

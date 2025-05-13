@@ -1,0 +1,111 @@
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import colors from "../app/config/colors";
+
+import EventModal from "./EventModal";
+import TaskModal from "./TaskModal";
+
+const CalendarItem = ({ item }) => {
+
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [eventModalVisible, setEventModalVisible] = useState(false);
+    
+    const openEvent = (event) => {
+        setSelectedEvent(event);
+        setEventModalVisible(true);
+    };
+
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [taskModalVisible, setTaskModalVisible] = useState(false);
+
+    const openTask = (task) => {
+        setSelectedTask(task);
+        setTaskModalVisible(true);
+    };
+
+    return(
+        <View>
+
+        <TouchableOpacity 
+            onPress={() => {
+                if (item.type === 'event') {
+                    openEvent(item)}
+                if (item.type === 'task') {
+                    openTask(item)}
+            }}
+        >
+        <View style={styles.itemContainer}>
+            <View style={styles.leftContainer}>
+                <View style={styles.timesContainer}>
+                    <Text style={styles.timeText}>
+                        {item.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                    <Text style={styles.timeText}>
+                        {item.end_date && `${new Date(item.end_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                    </Text>
+                </View>
+                <View style={[
+                    styles.verticalBar,
+                    { opacity: item.type === 'event' ? 1 : 0.5 }
+                ]}/>
+            </View>
+            <Text style={styles.itemTitle}>
+                {item.title}
+            </Text>
+        </View>
+        </TouchableOpacity>
+        
+        <EventModal
+            visible={eventModalVisible}
+            event={selectedEvent}
+            onClose={() => setEventModalVisible(false)}
+        />
+        <TaskModal
+            visible={taskModalVisible}
+            task={selectedTask}
+            onClose={() => setTaskModalVisible(false)}
+        />
+        
+        </View>
+        
+    );
+}
+
+const styles = StyleSheet.create({
+    itemContainer: {
+        padding: 10,
+        borderWidth: 1,
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    leftContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    timesContainer: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    timeText: {
+        fontSize: 16,
+        fontFamily: 'InterMedium',
+    },
+    verticalBar: {
+        width: 8,
+        height: 45,
+        backgroundColor: colors.secondary,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+    itemTitle: {
+        fontSize: 18,
+        fontFamily: "LailaSemiBold",
+        marginLeft: 10,
+        flexWrap: 'wrap',
+    },
+});
+
+export default CalendarItem;    
