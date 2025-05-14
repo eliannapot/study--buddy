@@ -13,7 +13,9 @@ const TaskItem = ({ task }) => {
 
     const openTask = (task) => {
         setSelectedTask(task);
+        console.log("setting the modal visible", modalVisible);
         setModalVisible(true);
+        console.log("Modal visible:", modalVisible);
     };
 
     const { deleteTask } = useTasks(); 
@@ -51,7 +53,9 @@ const TaskItem = ({ task }) => {
                     <Text style={styles.taskXP}>{task?.xp || 0} XP</Text>
                     <TouchableOpacity 
                         hitSlop={{ top: 40, bottom: 10, left: 40, right: 10 }}
-                        onPress={() => openTask(task)}
+                        onPress={() => {
+                            console.log("Opening task:", task);
+                            openTask(task)}}
                     > 
                         <Text style={styles.showTaskDetails}>...</Text>
                     </TouchableOpacity>

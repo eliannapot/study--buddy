@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from "react-native";
-import Modal from "react-native-modal";
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Modal from "react-native-modal";
 
+import { Picker } from "@react-native-picker/picker";
 import colors from "../app/config/colors";
 import candy from "../assets/images/candy.png";
-import { Picker } from "@react-native-picker/picker";
 
 const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
     if (!task) 
@@ -108,6 +108,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
                     <FontAwesome6 name="caret-down" size={25} color={colors.primary} style={{ marginLeft: 15}} />
                 </TouchableOpacity> */}
                 <View style={styles.pickerContainer}>
+                    {/* <Text> this was were the picker was</Text> */}
                     <Picker selectedValue={taskStatus} onValueChange={(value) => setTaskStatus(value)} dropdownIconColor={colors.primary}>
                         <Picker.Item label="Not Started" value="Not Started" style={styles.pickerText}/>
                         <Picker.Item label="In Progress" value="In Progress" style={styles.pickerText}/>
