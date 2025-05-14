@@ -1,6 +1,6 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Modal from "react-native-modal";
 
 import { Picker } from "@react-native-picker/picker";
@@ -10,6 +10,15 @@ import candy from "../assets/images/candy.png";
 const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
     if (!task) 
         return null; 
+    
+    //Customising the picker item style based on the color scheme of the device
+    const colorScheme = useColorScheme();
+    const pickerItemStyle = {
+        fontFamily: "InterSemiBold",
+        fontSize: 15,
+        color: colorScheme === 'dark' ? colors.lightbackground : colors.blueText,
+    };
+    
 
     const formatReminderDateTime = (dateString) => {
         const date = new Date(dateString);
@@ -28,7 +37,6 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
     <Modal
       isVisible={visible}
       onBackdropPress={onClose}
-      onDelete={onDelete}
       style={styles.modalContainer}
       animationIn="zoomIn"
       animationOut="zoomOut"
@@ -54,7 +62,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
                 </View>
                 <View>
                     <View style={styles.categoryView}> 
-                        <Text style={styles.taskCategoryDue}>#{task?.categories?.name || "None" || "None"}</Text>
+                        <Text style={styles.taskCategoryDue}>#{task?.categories?.name || "None"}</Text>
                     </View>
                     <Text style={styles.taskCategoryDue}>
                         Due: {new Date(task.dueDate).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit" })}         
@@ -108,11 +116,14 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
                     <FontAwesome6 name="caret-down" size={25} color={colors.primary} style={{ marginLeft: 15}} />
                 </TouchableOpacity> */}
                 <View style={styles.pickerContainer}>
-                    {/* <Text> this was were the picker was</Text> */}
-                    <Picker selectedValue={taskStatus} onValueChange={(value) => setTaskStatus(value)} dropdownIconColor={colors.primary}>
-                        <Picker.Item label="Not Started" value="Not Started" style={styles.pickerText}/>
-                        <Picker.Item label="In Progress" value="In Progress" style={styles.pickerText}/>
-                        <Picker.Item label="Done" value="Done" style={styles.pickerText}/>
+                    <Picker 
+                        selectedValue={taskStatus} 
+                        onValueChange={(value) => setTaskStatus(value)} 
+                        themeVariant="light"
+                        dropdownIconColor={colors.primary}>
+                        <Picker.Item label="Not Started" value="Not Started" style={pickerItemStyle}/>
+                        <Picker.Item label="In Progress" value="In Progress" style={pickerItemStyle}/>
+                        <Picker.Item label="Done" value="Done" style={pickerItemStyle}/>
                     </Picker>
                 </View>
             </View>
@@ -203,13 +214,13 @@ const styles = StyleSheet.create({
     },
     pickerContainer: {
         flex: 1,
-        backgroundColor: colors.hexToRGBA(colors.primary, 0.1),
+        backgroundColor: colors.hexToRGBA(colors.primary, 0.3),
         borderRadius: 20,
         borderWidth: 0.5,
         justifyContent: "space-between",
     },
     pickerText: {
-        fontFamily: "InterRegular",
+        fontFamily: "InterSemiBold",
         fontSize: 15,
         flexWrap: "wrap",
         flexShrink: 1, 
