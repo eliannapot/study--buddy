@@ -1,10 +1,10 @@
-import {View, Text, TouchableOpacity, StyleSheet, Image, FlatList} from 'react-native';
 import { useRouter } from 'expo-router';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import EventItem from './EventItem';
 
-import plusIcon from '../assets/images/plus.png';
 import colors from '../app/config/colors';
+import plusIcon from '../assets/images/plus.png';
 
 
 const EventsContainer = ({events}) => {
@@ -27,13 +27,21 @@ const EventsContainer = ({events}) => {
             </TouchableOpacity>
         </View>
         <View>
-            <FlatList
-                    data = {events}
-                    keyExtractor={(item) => item.event_id.toString()}
-                    renderItem={
-                        ({item}) => <EventItem event={item} />
-                    }      
-            />
+            {events.length > 0 ? (
+                <FlatList
+                        data = {events}
+                        keyExtractor={(item) => item.event_id.toString()}
+                        renderItem={
+                            ({item}) => <EventItem event={item} />
+                        }      
+                />
+            ) :(
+                <View style={styles.eventContainer}>
+                    <View>
+                        <Text style={styles.eventTitle}>No upcoming events scheduled!</Text>
+                    </View>
+                </View>
+            )}
             <TouchableOpacity style={styles.seeAllEventsButton} onPress={() => router.push("/allEvents")}>
                 <Text style={styles.seeAllEventsText}>See all events</Text>
                 <Text style={styles.seeAllEventsDots}>...</Text>
@@ -70,28 +78,44 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: colors.primary,
     },
+    eventContainer: {
+        alignItems: "center", // Ensures vertical alignment
+        flexDirection: "row",
+        justifyContent: "center",
+        backgroundColor: colors.hexToRGBA(colors.tertiary, 0.2),
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        marginHorizontal: 5,
+        borderRadius: 10,
+    },
+    eventTitle: {
+        fontFamily: "InterItalic",
+        fontSize: 17,
+        marginBottom: 2,
+        numberOfLines: 1,
+    },
     seeAllEventsButton: {
-            marginBottom: 10,
-            borderRadius: 5,
-            backgroundColor: colors.hexToRGBA(colors.tertiary, 0.2),
-            alignItems: "center",
-            justifyContent: "center",
-            borderWidth: 1,
-            paddingHorizontal: 10,
-            marginHorizontal: 5,
-            borderRadius: 10,
-        },
-        seeAllEventsText: {
-            fontFamily: "InterLight",
-            fontSize: 16,
-        },
-        seeAllEventsDots: {
-            fontFamily: "InterExtraBold",
-            fontSize: 24,
-            marginLeft: 5,
-            marginRight: 1,
-            lineHeight: 14,
-        },
+        marginBottom: 10,
+        borderRadius: 5,
+        backgroundColor: colors.hexToRGBA(colors.tertiary, 0.2),
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        marginHorizontal: 5,
+        borderRadius: 10,
+    },
+    seeAllEventsText: {
+        fontFamily: "InterLight",
+        fontSize: 16,
+    },
+    seeAllEventsDots: {
+        fontFamily: "InterExtraBold",
+        fontSize: 16,
+        marginLeft: 5,
+        marginRight: 1,
+    },
 });
 
 

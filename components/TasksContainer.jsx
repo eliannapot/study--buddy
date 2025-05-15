@@ -23,13 +23,22 @@ const TasksContainer = ({tasks}) => {
                 </TouchableOpacity>
             </View>
             <View>
-                <FlatList
+                {tasks.length > 0 ? (
+                    <FlatList
                         data = {tasks}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={
                             ({item}) => <TaskItem task={item}  />
                         }      
-                />
+                    />
+                ) :(
+                    <View style={styles.taskContainer}>
+                        <View>
+                            <Text style={styles.taskTitle}>No upcoming tasks scheduled!</Text>
+                        </View>
+                    </View>
+                )}
+                
                 <TouchableOpacity style={styles.seeAllTasksButton} onPress={() => router.push("/allTasks")}>
                     <Text style={styles.seeAllTasksText}>See all tasks</Text>
                     <Text style={styles.seeAllTasksDots}>...</Text>
@@ -66,10 +75,27 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: colors.primary,
     },
+    taskContainer: {
+        alignItems: "center", // Ensures vertical alignment
+        flexDirection: "row",
+        justifyContent: "center",
+        backgroundColor: colors.hexToRGBA(colors.tertiary, 0.2),
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        marginHorizontal: 5,
+        borderRadius: 10,
+    },
+    taskTitle: {
+        fontFamily: "InterItalic",
+        fontSize: 17,
+        marginBottom: 2,
+        numberOfLines: 1,
+    },
     seeAllTasksButton: {
         marginBottom: 10,
         borderRadius: 5,
-        backgroundColor: colors.hexToRGBA(colors.tertiary, 0.1),
+        backgroundColor: colors.hexToRGBA(colors.tertiary, 0.2),
         alignItems: "center",
         justifyContent: "center",
         borderWidth: 1,
@@ -83,10 +109,9 @@ const styles = StyleSheet.create({
     },
     seeAllTasksDots: {
         fontFamily: "InterExtraBold",
-        fontSize: 24,
+        fontSize: 16,
         marginLeft: 5,
         marginRight: 1,
-        lineHeight: 14,
     },
 });
 

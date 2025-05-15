@@ -51,8 +51,8 @@ const DashboardScreen = () => {
             <View>
                 <TasksContainer tasks={upcomingTasks}/>
             </View>
-            <View>
-                <EventsContainer events={upcomingEvents}/>
+            <View>     
+                <EventsContainer events={upcomingEvents}/>            
             </View>         
         </View>
     );
