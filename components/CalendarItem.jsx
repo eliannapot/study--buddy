@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../app/config/colors";
 
 import EventModal from "./EventModal";
@@ -46,7 +46,7 @@ const CalendarItem = ({ item }) => {
                 </View>
                 <View style={[
                     styles.verticalBar,
-                    { opacity: item.type === 'event' ? 1 : 0.5 }
+                    { opacity: item.type === 'event' ? 1 : 0.8 }
                 ]}/>
             </View>
             <Text style={styles.itemTitle}>
