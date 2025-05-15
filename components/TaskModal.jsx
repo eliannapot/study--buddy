@@ -1,5 +1,5 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Modal from "react-native-modal";
 
@@ -32,6 +32,9 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
     };
 
     const [taskStatus, setTaskStatus] = useState(task.status);
+    useEffect(() => {
+        setTaskStatus(task.status);
+    }, [task.status]);
 
     return (      
     <Modal
@@ -120,10 +123,12 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
                         selectedValue={taskStatus} 
                         onValueChange={(value) => setTaskStatus(value)} 
                         themeVariant="light"
-                        dropdownIconColor={colors.primary}>
-                        <Picker.Item label="Not Started" value="Not Started" style={pickerItemStyle}/>
-                        <Picker.Item label="In Progress" value="In Progress" style={pickerItemStyle}/>
-                        <Picker.Item label="Done" value="Done" style={pickerItemStyle}/>
+                        dropdownIconColor={colors.primary}
+                        itemStyle={pickerItemStyle}
+                    >
+                        <Picker.Item label="Not Started" value="Not Started" ViewStyleProp={pickerItemStyle}/>
+                        <Picker.Item label="In Progress" value="In Progress" ViewStyleProp={pickerItemStyle}/>
+                        <Picker.Item label="Done" value="Done" ViewStyleProp={pickerItemStyle}/>
                     </Picker>
                 </View>
             </View>

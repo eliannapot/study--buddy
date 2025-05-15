@@ -7,7 +7,7 @@ export const badges = [
     { type: 'Social', id: '13', title: 'Make a StudyBuddy', isWon: true, isActive: false, dateEarned: '2025-04-07T12:00:00Z', isFavourite: false },
     { type: 'Committed', id: '6', title: 'Reach a 3 days streak', isWon: true, isActive: false, dateEarned: '2025-04-02T09:30:00Z', isFavourite: false },
     { type: 'Committed', id: '7', title: 'Reach a 10 days streak', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
-    { type: 'Leader', id: '8', title: 'Intermediate', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
+    { type: 'Commited', id: '8', title: 'Reach a 30 days streak', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
     { type: 'Leader', id: '9', title: 'Finish the week in 3rd place', isWon: true, isActive: true, dateEarned: '2025-04-03T17:45:00Z', isFavourite: false },
     { type: 'Social', id: '10', title: 'Complete a Common Task', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
     { type: 'Leader', id: '11', title: 'Finish the week in 2nd place', isWon: false, isActive: false, dateEarned: null, isFavourite: false },
