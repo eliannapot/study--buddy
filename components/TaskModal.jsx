@@ -1,5 +1,5 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Modal from "react-native-modal";
 
@@ -8,12 +8,15 @@ import colors from "../app/config/colors";
 import candy from "../assets/images/candy.png";
 
 const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
+    
     if (!task) 
         return null; 
+
+    const [taskStatus, setTaskStatus] = useState(task.status);
     
     //Customising the picker item style based on the color scheme of the device
     const colorScheme = useColorScheme();
-    const pickerItemStyle = {
+    const pickerItemStyling = {
         fontFamily: "InterSemiBold",
         fontSize: 15,
         color: colorScheme === 'dark' ? colors.lightbackground : colors.blueText,
@@ -31,10 +34,6 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
         return `${day}/${month} @ ${hours}:${minutes}`;
     };
 
-    const [taskStatus, setTaskStatus] = useState(task.status);
-    useEffect(() => {
-        setTaskStatus(task.status);
-    }, [task.status]);
 
     return (      
     <Modal
@@ -124,11 +123,11 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
                         onValueChange={(value) => setTaskStatus(value)} 
                         themeVariant="light"
                         dropdownIconColor={colors.primary}
-                        itemStyle={pickerItemStyle}
+                        itemStyle={[pickerItemStyling, styles.pickerText]}
                     >
-                        <Picker.Item label="Not Started" value="Not Started" ViewStyleProp={pickerItemStyle}/>
-                        <Picker.Item label="In Progress" value="In Progress" ViewStyleProp={pickerItemStyle}/>
-                        <Picker.Item label="Done" value="Done" ViewStyleProp={pickerItemStyle}/>
+                        <Picker.Item label="Not Started" value="Not Started"/>
+                        <Picker.Item label="In Progress" value="In Progress"/>
+                        <Picker.Item label="Done" value="Done"/>
                     </Picker>
                 </View>
             </View>

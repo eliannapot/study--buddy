@@ -13,9 +13,7 @@ const TaskItem = ({ task }) => {
 
     const openTask = (task) => {
         setSelectedTask(task);
-        console.log("setting the modal visible", modalVisible);
         setModalVisible(true);
-        console.log("Modal visible:", modalVisible);
     };
 
     const { deleteTask } = useTasks(); 
