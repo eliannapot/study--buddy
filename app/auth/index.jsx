@@ -203,6 +203,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginLeft: 10,
         width: '60%',
+        color: colors.blueText,
     },
     button: {
         backgroundColor: colors.hexToRGBA(colors.secondary, 0.5),
