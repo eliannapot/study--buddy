@@ -6,11 +6,11 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
+import { useCategories } from "../../contexts/CategoryContext.js";
 import { useEvents } from "../../contexts/EventContext";
-//import { useCategories } from "../../contexts/CategoryContext.js";
 
 import { buddies } from "../../data/buddies";
-import { categories } from "../../data/categories";
+// import { categories } from "../../data/categories";
 
 import candies from "../../assets/images/candies.png";
 import colors from "../config/colors";
@@ -26,7 +26,7 @@ import XPAmountSlider from "../../components/XPAmountSlider";
 const NewEventScreen = () => {
 
     const { addEvent } = useEvents();
-    //const { categories } = useCategories();
+    const { categories } = useCategories();
 
     const [eventName, setEventName] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("None");

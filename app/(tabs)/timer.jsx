@@ -2,9 +2,9 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { categories } from '../../data/categories';
+// import { categories } from '../../data/categories';
+import { useCategories } from '../../contexts/CategoryContext.js';
 import colors from '../config/colors';
-//import { useCategories } from '../../contexts/CategoryContext.js';
 
 
 import BuddyList from '../../components/BuddyList';
@@ -18,7 +18,7 @@ import stopIcon from '../../assets/images/stop-button.png';
 
 const TimerScreen = () => {
     
-    //const { categories } = useCategories(); 
+    const { categories } = useCategories(); 
     const [selectedCategory, setSelectedCategory] = useState(null);
     
     const [seconds, setSeconds] = useState(0);

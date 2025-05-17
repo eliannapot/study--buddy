@@ -4,11 +4,11 @@ import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+import { useCategories } from '../../contexts/CategoryContext.js';
 import { useTasks } from '../../contexts/TaskContext';
-//import { useCategories } from '../../contexts/CategoryContext.js';
 
 import { buddies } from '../../data/buddies';
-import { categories } from '../../data/categories';
+// import { categories } from '../../data/categories';
 
 import candies from '../../assets/images/candies.png';
 import colors from '../config/colors';
@@ -24,7 +24,7 @@ import XPAmountSlider from '../../components/XPAmountSlider';
 const NewTaskScreen = () => {
 
     const { addTask } = useTasks(); 
-    //const { categories } = useCategories();
+    const { categories } = useCategories();
 
     const [taskTitle, setTaskTitle] = useState('');
     const [selectedCategory, setSelectedCategory] = useState("None");

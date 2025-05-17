@@ -8,9 +8,9 @@ import { useEffect } from 'react';
 
 import colors from "./config/colors";
 
+import { CategoryProvider } from "../contexts/CategoryContext";
 import { EventsProvider } from "../contexts/EventContext";
 import { TasksProvider } from "../contexts/TaskContext";
-// import { CategoryProvider } from "../contexts/CategoryContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -64,7 +64,7 @@ const RootLayout = () => {
   
   return (
   <>
-  {/* <CategoryProvider> */}
+  <CategoryProvider>
   <TasksProvider>
   <EventsProvider>
   <StatusBar backgroundColor = {colors.primary} />
@@ -94,7 +94,7 @@ const RootLayout = () => {
   </Stack>
   </EventsProvider>
   </TasksProvider>
-  {/* </CategoryProvider> */}
+  </CategoryProvider>
   </>
   );
 };
