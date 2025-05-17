@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { useCategories } from '../contexts/CategoryContext';
 import { useTasks } from "../contexts/TaskContext";
 
+import { router } from 'expo-router';
 import colors from '../app/config/colors';
 import TaskModal from './TaskModal';
 
 const TaskItem = ({ task }) => {
+
+    const { categories } = useCategories();
 
     const [selectedTask, setSelectedTask] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -17,8 +21,17 @@ const TaskItem = ({ task }) => {
     };
 
     const { deleteTask } = useTasks(); 
+
+    const handleEdit = () => {
+        console.log("Editing task:", selectedTask);
+        setModalVisible(false);
+        router.push({
+            pathname: "/newTask",
+            params: { taskId: selectedTask.$id }
+        });
+    };
     
-    const onDelete = () => {
+    const handleDelete = () => {
         console.log("Deleting task:", selectedTask);
         deleteTask(selectedTask.$id); 
         setModalVisible(false); 
@@ -64,7 +77,8 @@ const TaskItem = ({ task }) => {
                 visible={modalVisible}
                 task={selectedTask}
                 onClose={() => setModalVisible(false)}
-                onDelete={onDelete}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
             />   
                    
         </View>

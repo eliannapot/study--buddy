@@ -23,6 +23,16 @@ const databaseService = {
         };
     },
 
+    //Update Document
+    async updateDocument(dbId, colId, id, data) {
+        try {
+            return await database.updateDocument(dbId, colId, id, data); //Appwrite SDK function
+        } catch (error) {
+            console.error("Error updating document:", error.message);
+            return {error: error.message}; 
+        }
+    },
+
     //Delete Document
     async deleteDocument(diId, colId, id) {
         try {

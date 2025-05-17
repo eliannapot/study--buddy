@@ -46,6 +46,20 @@ export const TasksProvider = ({ children }) => {
             setTasks([...tasks, response.data]); 
         }
     };
+
+    const editTask = async (taskId, updatedTask) => {
+        if (!taskId || !updatedTask) {
+            Alert.alert("Error, no task or taskId provided");
+            return;
+        }
+        const response = await taskService.updateTask(taskId, updatedTask);
+        if (response.error) {
+            Alert.alert("Error", response.error);
+            return;
+        } else {
+            setTasks(tasks.map((task) => (task.$id === taskId ? response.data : task))); 
+        }
+    }
     
     const deleteTask = async (taskId) => {
         console.log("opening alert to delete task with id:", taskId);
@@ -70,7 +84,7 @@ export const TasksProvider = ({ children }) => {
     };
     
     return (
-        <TasksContext.Provider value={{ tasks, addTask, deleteTask }}>
+        <TasksContext.Provider value={{ tasks, addTask, deleteTask, editTask }}>
             { loading ? (
                 <View style={{justifyContent: 'center', alignItems: 'center' }}> 
                     <ActivityIndicator size ="large" color={colors.primary}  />

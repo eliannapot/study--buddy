@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -7,8 +7,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useCategories } from '../../contexts/CategoryContext.js';
 import { useTasks } from '../../contexts/TaskContext';
 
+import { combineDateAndTime, getReminderDate, isValidDate, splitDateAndTime } from '../../utils/datetimeUtils';
+
 import { buddies } from '../../data/buddies';
-// import { categories } from '../../data/categories';
 
 import candies from '../../assets/images/candies.png';
 import colors from '../config/colors';
@@ -21,156 +22,129 @@ import StudyBuddyPicker from '../../components/StudyBuddyPicker';
 import TitleInput from '../../components/TitleInput';
 import XPAmountSlider from '../../components/XPAmountSlider';
 
-const NewTaskScreen = () => {
-
-    const { addTask } = useTasks(); 
+const TaskFormScreen = () => {
+    const { editTask, addTask, tasks } = useTasks(); 
     const { categories } = useCategories();
 
-    const [taskTitle, setTaskTitle] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState("None");
-    const [taskDetails, setTaskDetails] = useState('');
-    const [dueDate, setDueDate] = useState(new Date());
-    const [dueTime, setDueTime] = useState(new Date());
-    const [repeats, setRepeats] = useState('Never');
-    const [reminder, setReminder] = useState('Never');
-    const [studyBuddy, setStudyBuddy] = useState(null);
-    const [experiencePoints, setExperiencePoints] = useState(1);
+    const params = useLocalSearchParams();
+    const editingTask = tasks.find((task) => task.$id === params.taskId);
 
-    const isValidDate = (d) => d instanceof Date && !isNaN(d);
+    const [taskTitle, setTaskTitle] = useState(editingTask?.title || '');
+    const [selectedCategory, setSelectedCategory] = useState(editingTask?.categories || null);
+    const [taskDetails, setTaskDetails] = useState(editingTask?.details || '');
+
+    // const [dueDate, setDueDate] = useState(editingTask?.dueDate ? new Date(editingTask.dueDate) : new Date());
+    // const [dueTime, setDueTime] = useState(editingTask?.dueDate ? new Date(editingTask.dueDate) : new Date());
+    const { dateOnly, timeOnly } = editingTask?.dueDate ? splitDateAndTime(editingTask.dueDate) : { dateOnly: new Date(), timeOnly: new Date() };
+    const [dueDate, setDueDate] = useState(dateOnly);
+    const [dueTime, setDueTime] = useState(timeOnly);
+
+    const [repeats, setRepeats] = useState(editingTask?.repetition || 'Never');
+    const [reminder, setReminder] = useState(editingTask?.reminder ? 'Custom' : 'Never');
+    const [studyBuddy, setStudyBuddy] = useState(editingTask?.studyBuddy || null);
+    const [experiencePoints, setExperiencePoints] = useState(editingTask?.xp || 1);
+
     const safeDueDate = isValidDate(dueDate) ? dueDate : new Date();
     const safeDueTime = isValidDate(dueTime) ? dueTime : new Date();
+    const combinedDueDate = combineDateAndTime(safeDueDate, safeDueTime);
 
-    const combinedDueDate = new Date(
-        safeDueDate.getFullYear(),
-        safeDueDate.getMonth(),
-        safeDueDate.getDate(),
-        safeDueTime.getHours(),
-        safeDueTime.getMinutes()
-    ).toISOString();
-
-    const handleReminder = (reminder) => {
-        const reminderDate = new Date(combinedDueDate);
-        switch (reminder) {
-            case "1 hour before":
-                reminderDate.setHours(reminderDate.getHours() - 1);
-                break;
-            case "2 hours before":
-                reminderDate.setHours(reminderDate.getHours() - 2);
-                break;
-            case "1 day before":
-                reminderDate.setDate(reminderDate.getDate() - 1);
-                break;
-            case "2 days before":
-                reminderDate.setDate(reminderDate.getDate() - 2);
-                break;
-            default:
-                return null;
+    const handleSave = () => {
+        const taskData = {
+            ...editingTask,
+            title: taskTitle,
+            categories: selectedCategory?.$id || null,
+            dueDate: combinedDueDate,
+            xp: experiencePoints,
+            status: editingTask?.status || "Not Started",
+            studyBuddy: studyBuddy,
+            details: taskDetails,
+            reminder: reminder !== "Never" ? getReminderDate(reminder, combinedDueDate) : null,
+            repetition: repeats !== "Never" ? repeats : null,
+        };
+        if (editingTask) {
+            editTask(editingTask.$id, taskData); 
+            alert("Task Edited!");
+        } else {
+            addTask(taskData);
+            alert("Task Created!");
         }
-        return reminderDate.toISOString();
+    router.back();
     }
 
     return (
-        <View style={{flex: 1}}>
-        <View style={styles.screenContainer}>
+        <View style={{ flex: 1 }}>
+            <View style={styles.screenContainer}>
 
-            {/* Task Name */}
-            <TitleInput
-                value={taskTitle}
-                onChangeText={setTaskTitle}
-                placeholder="Task name"
-            />
-
-            {/* Category */}
-            <View style={styles.groupContainer}>
-                <Text style={styles.groupName}>Category:</Text>
-                <CategorySelector
-                    categories={categories}
-                    selectedCategory={selectedCategory}
-                    onCategorySelect={setSelectedCategory}
+                <TitleInput
+                    value={taskTitle}
+                    onChangeText={setTaskTitle}
+                    placeholder="Task name"
                 />
-            </View>
 
-            {/* Details */}
-            <View style={styles.groupContainer}>
-                <Text style={styles.groupName}>Details:</Text>
-                <TextInput
-                    placeholder="Task details"
-                    maxLength={200}
-                    placeholderTextColor={colors.blueText}
-                    style={styles.taskDetailsInput}
-                    value={taskDetails}
-                    onChangeText={setTaskDetails}
+                <View style={styles.groupContainer}>
+                    <Text style={styles.groupName}>Category:</Text>
+                    <CategorySelector
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        onCategorySelect={setSelectedCategory}
                     />
-            </View>
-
-            {/* Due date and time */}
-            <DateTimePickerRow
-                date={dueDate}
-                setDate={setDueDate}
-                time={dueTime}
-                setTime={setDueTime}
-                label="Due"
-                Icon={MaterialIcons}
-                iconName="lock-clock"
-            />
-            
-             
-            {/* Repetition setting */}
-            <RepeatPicker
-                value={repeats}
-                onChange={setRepeats}
-            />
-
-            {/* Reminder Notification setting */}
-            <ReminderPicker
-                value={reminder}
-                onChange={setReminder}
-            />
-
-            {/* Study Buddy */}
-            <StudyBuddyPicker
-                buddies={buddies}
-                value={studyBuddy}
-                setValue={setStudyBuddy}
-            />
-
-            {/* Experience Points */}
-            <View style={styles.groupContainer}>
-                <Image source={candies} style={{width: 31, height: 38}}/> 
-                <Text style={styles.groupName}>Experience Points:</Text>
-                <XPAmountSlider
-                    value={experiencePoints}
-                    onValueChange={setExperiencePoints}
-                />
-            </View>
-            
-        </View>
-
-        {/* Save */}
-        <TouchableOpacity 
-            onPress={() => {
-                const newTask = {
-                    //task_id: Date.now().toString(),
-                    title: taskTitle,
-                    categories: selectedCategory == null ? "None" : selectedCategory,
-                    dueDate: combinedDueDate !== null ? combinedDueDate : new Date().toISOString(),
-                    xp: experiencePoints,
-                    status: "Not Started",
-                    studyBuddy: studyBuddy,
-                    details: taskDetails,
-                    reminder: reminder !== "Never" ? handleReminder(reminder) : null,
-                    repetition: repeats !== "Never" ? repeats : null,
-                };
-                addTask(newTask); 
-                alert("Task Saved!", newTask);
-                router.back(); 
-            }}
-        >
-                <View style={styles.saveButton}>
-                    <MaterialIcons name="save" size={40} color={colors.white}/>
-                    <Text style={styles.saveText}>Save</Text>
                 </View>
-        </TouchableOpacity>
+
+                <View style={styles.groupContainer}>
+                    <Text style={styles.groupName}>Details:</Text>
+                    <TextInput
+                        placeholder="Task details"
+                        maxLength={200}
+                        placeholderTextColor={colors.blueText}
+                        style={styles.taskDetailsInput}
+                        value={taskDetails}
+                        onChangeText={setTaskDetails}
+                    />
+                </View>
+
+                <DateTimePickerRow
+                    date={dueDate}
+                    setDate={setDueDate}
+                    time={dueTime}
+                    setTime={setDueTime}
+                    label="Due"
+                    Icon={MaterialIcons}
+                    iconName="lock-clock"
+                />
+
+                <RepeatPicker
+                    value={repeats}
+                    onChange={setRepeats}
+                />
+
+                <ReminderPicker
+                    value={reminder}
+                    onChange={setReminder}
+                />
+
+                <StudyBuddyPicker
+                    buddies={buddies}
+                    value={studyBuddy}
+                    setValue={setStudyBuddy}
+                />
+
+                <View style={styles.groupContainer}>
+                    <Image source={candies} style={{ width: 31, height: 38 }} />
+                    <Text style={styles.groupName}>Experience Points:</Text>
+                    <XPAmountSlider
+                        value={experiencePoints}
+                        onValueChange={setExperiencePoints}
+                    />
+                </View>
+
+            </View>
+
+            <TouchableOpacity onPress={handleSave}>
+                <View style={styles.saveButton}>
+                    <MaterialIcons name="save" size={40} color={colors.white} />
+                    <Text style={styles.saveText}>{editingTask ? "Save Changes" : "Save"}</Text>
+                </View>
+            </TouchableOpacity>
 
         </View>
     );
@@ -221,4 +195,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NewTaskScreen;
+export default TaskFormScreen;

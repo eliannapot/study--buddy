@@ -1,10 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-
-// import {tasks as tasklist} from "../../data/tasks";
-// import {events as eventlist} from "../../data/events";
 
 import { useEvents } from '../../contexts/EventContext';
 import { useTasks } from '../../contexts/TaskContext';
@@ -12,26 +9,17 @@ import { useTasks } from '../../contexts/TaskContext';
 import CalendarItem from '../../components/CalendarItem';
 import colors from '../config/colors';
 
-
 const CalendarScreen = () => {
-
     const today = new Date().toISOString().split('T')[0];
-    
-    //const [tasks, setTasks] = useState(tasklist); 
-    //const [events, setEvents] = useState(eventlist); 
     const { tasks } = useTasks();
     const { events } = useEvents();
 
     const [selected, setSelected] = useState(today);
-    const [dailyItems, setDailyItems] = useState([]);
 
+    const isToday = (dateString) => dateString === today;
 
-    const isToday = (dateString) => {
-        //const today = new Date().toISOString().split('T')[0];
-        return dateString === today;
-      };
-
-    const getItemsForDay = (dateString) => {   
+    // 🧠 Filter tasks/events for a specific day
+    const getItemsForDay = (dateString) => {
         const itemsForDay = [
             ...events
                 .filter(event => event.date.startsWith(dateString))
@@ -39,103 +27,95 @@ const CalendarScreen = () => {
             ...tasks
                 .filter(task => task.dueDate.startsWith(dateString))
                 .map(task => ({ ...task, type: 'task', time: new Date(task.dueDate) })),
-            ]
+        ];
         return itemsForDay.sort((a, b) => a.time - b.time);
     };
 
+    // 🧠 Automatically update dailyItems whenever selected, tasks, or events change
+    const dailyItems = useMemo(() => getItemsForDay(selected), [selected, tasks, events]);
+
     const formatDate = (dateString) => {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         return `${day}/${month}`;
     };
-      
-    useEffect(() => {
-        setDailyItems(getItemsForDay(today));
-    }, []);    
 
     return (
         <View style={styles.container}>
             <Calendar
                 renderArrow={(direction) => (
                     <Ionicons
-                      name={direction === 'left' ? 'caret-back' : 'caret-forward'}
-                      size={30} 
-                      color={colors.primary} 
+                        name={direction === 'left' ? 'caret-back' : 'caret-forward'}
+                        size={30}
+                        color={colors.primary}
                     />
-                  )}
+                )}
                 style={styles.calendarContainer}
                 markedDates={{
-                    [selected]: {selected: true, selectedDotColor: 'orange'}
+                    [selected]: { selected: true, selectedDotColor: 'orange' },
                 }}
                 theme={{
                     backgroundColor: colors.lightbackground,
                     calendarBackground: colors.hexToRGBA(colors.tertiary, 0.05),
-
                     textSectionTitleColor: colors.black,
                     textMonthFontFamily: "LailaBold",
                     textMonthFontSize: 28,
-                    
                 }}
-                dayComponent={( { date, state } ) => {
-
+                dayComponent={({ date, state }) => {
                     const dayItems = getItemsForDay(date.dateString).slice(0, 2);
+                    const isSelected = selected === date.dateString;
 
                     return (
                         <TouchableOpacity
                             onPress={() => {
                                 if (state !== 'disabled') {
                                     setSelected(date.dateString);
-                                    setDailyItems(getItemsForDay(date.dateString));
                                 }
                             }}
                             style={[
                                 styles.dayContainer,
-                                selected === date.dateString && styles.selectedDay,
+                                isSelected && styles.selectedDay,
                                 isToday(date.dateString) && styles.todayDay,
                             ]}
-                            >
-                            <Text style={[
+                        >
+                            <Text
+                                style={[
                                     { color: state === 'disabled' ? 'gray' : 'black' },
                                     styles.dayText,
                                     isToday(date.dateString) && styles.todayText,
-                                    selected === date.dateString && styles.selectedText,
-                                    ]}>
+                                    isSelected && styles.selectedText,
+                                ]}
+                            >
                                 {date.day}
                             </Text>
                             <View style={styles.barContainer}>
-                                {dayItems.slice(0, 2).map( (item, index) => {
-                                    return (
-                                        <View
-                                            key={index}
-                                            style={[
-                                                styles.bar,
-                                                { opacity: item.type === 'event' ? 1 : 0.5 },
-                                            ]}
-                                        />
-                                    );
-                                })}
+                                {dayItems.map((item, index) => (
+                                    <View
+                                        key={index}
+                                        style={[
+                                            styles.bar,
+                                            { opacity: item.type === 'event' ? 1 : 0.5 },
+                                        ]}
+                                    />
+                                ))}
                             </View>
                         </TouchableOpacity>
                     );
                 }}
             />
-            
-            <View style={styles.detailsContainer}> 
+
+            <View style={styles.detailsContainer}>
                 <Text style={styles.detailsDateText}>{formatDate(selected)}</Text>
                 <View style={styles.scrollableView}>
                     <FlatList
                         data={dailyItems}
-                        keyExtractor={(item, index) => `${item.type}-${item.event_id || item.task_id}-${index}`}
-                        renderItem={({ item }) => (
-                            <CalendarItem item={item} />
-                        )}
+                        keyExtractor={(item, index) => `${item.type}-${item.$id || index}`}
+                        renderItem={({ item }) => <CalendarItem item={item} />}
                         scrollEnabled={true}
-                        //contentContainerStyle={{ paddingVertical: 10 }}
                     />
                 </View>
-            </View>     
-
+            </View>
         </View>
     );
 };

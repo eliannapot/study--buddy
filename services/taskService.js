@@ -5,6 +5,13 @@ import databaseService from './databaseService.js';
 const dbId = process.env.EXPO_PUBLIC_APPWRITE_DB_ID;
 const colId = process.env.EXPO_PUBLIC_APPWRITE_COL_TASKS_ID;
 
+// Helper to remove Appwrite system fields
+const cleanAppwriteData = (data) => {
+    return Object.fromEntries(
+        Object.entries(data).filter(([key]) => !key.startsWith('$'))
+    );
+};
+
 const taskService = {
 
     //Get Tasks
@@ -31,6 +38,19 @@ const taskService = {
             dataToSend,
             ID.unique(), // Generate a unique ID for the document
         );
+        if (response?.error) {
+            return {error: response.error};
+        }
+        return {data: response};
+    },
+
+    //Update Task
+    async updateTask(id, data) {
+        if (!id || !data) {
+            return {error: "No id or data provided"};
+        }
+        const cleanedData = cleanAppwriteData(data);
+        const response = await databaseService.updateDocument(dbId, colId, id, cleanedData);
         if (response?.error) {
             return {error: response.error};
         }

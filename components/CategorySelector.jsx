@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import colors from '../app/config/colors';
 
@@ -29,13 +28,13 @@ const CategorySelector = ({ categories, selectedCategory, onCategorySelect }) =>
               key={item.name}
               style={[
                 styles.categoryButton,
-                selectedCategory === item.name && styles.selectedButton
+                selectedCategory?.$id === item.$id && styles.selectedButton
               ]}
-              onPress={() => onCategorySelect(item.name)}
+              onPress={() => onCategorySelect(item)}
               >
                 <Text style={[
                   styles.categoryText,
-                  selectedCategory === item.name && styles.selectedText
+                  selectedCategory?.$id === item.$id && styles.selectedText
                 ]}>
                   #{item.name}
                 </Text>
