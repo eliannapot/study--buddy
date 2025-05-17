@@ -17,8 +17,6 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
     //Customising the picker item style based on the color scheme of the device
     const colorScheme = useColorScheme();
     const pickerItemStyling = {
-        // fontFamily: "InterSemiBold",
-        // fontSize: 15,
         color: colorScheme === 'dark' ? colors.lightbackground : colors.blueText,
     };
     
