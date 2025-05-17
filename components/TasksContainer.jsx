@@ -26,7 +26,7 @@ const TasksContainer = ({tasks}) => {
                 {tasks.length > 0 ? (
                     <FlatList
                         data = {tasks}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => item.$id.toString()}
                         renderItem={
                             ({item}) => <TaskItem task={item}  />
                         }      

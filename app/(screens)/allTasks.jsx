@@ -92,8 +92,8 @@ const AllTasksScreen = () => {
                 </View>
                 <FlatList
                     data={sortedTasks}
-                    keyExtractor={(item) => item.id.toString()}
-                    //keyExtractor={(item) => item.$id.toString()}
+                    // keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item.$id.toString()}
                     renderItem={({ item }) => <TaskItem task={item} />}
                     contentContainerStyle={styles.listContainer}
                 />
