@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 
 const EventsContext = createContext();
 
@@ -30,8 +31,18 @@ export const EventsProvider = ({ children }) => {
         setLoading(false);
     }
 
-    const addEvent = (event) => {
-        setEvents((prevEvents) => [...prevEvents, event]);
+    const addEvent = async (event) => {
+        if (!event) {
+            Alert.alert("Error, no event provided");
+            return;
+        }
+        const response = await eventService.addEvent(event);
+        if (response.error) {
+            Alert.alert("Error", response.error);
+            return;
+        } else {
+            setEvents([...events, response.data]);
+        }
     };
 
     const deleteEvent = (eventId) => {

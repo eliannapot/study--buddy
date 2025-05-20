@@ -1,3 +1,4 @@
+import { ID } from 'react-native-appwrite';
 import databaseService from './databaseService.js';
 
 // Appwrite database and collection id
@@ -15,6 +16,26 @@ const eventService = {
         return { data: response };
     },
 
+    // Create Event
+    async addEvent(data) {
+        if (!data) {
+            return {error: "No data provided"};
+        }
+        const dataToSend = {
+            ...data,
+            createdAt: new Date().toISOString(),
+        }
+        const response = await databaseService.createDocument(
+            dbId,
+            colId,
+            dataToSend,
+            ID.unique(), // Generate a unique ID for the document
+        );
+        if (response?.error) {
+            return {error: response.error};
+        }
+        return {data: response};
+    },
 };
 
 export default eventService;

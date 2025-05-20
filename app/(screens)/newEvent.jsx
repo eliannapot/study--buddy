@@ -9,6 +9,9 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useCategories } from "../../contexts/CategoryContext.js";
 import { useEvents } from "../../contexts/EventContext";
 
+import { getReminderDate } from '../../utils/datetimeUtils';
+
+
 import { buddies } from "../../data/buddies";
 // import { categories } from "../../data/categories";
 
@@ -25,7 +28,7 @@ import XPAmountSlider from "../../components/XPAmountSlider";
 
 const NewEventScreen = () => {
 
-    const { addEvent } = useEvents();
+    const { addEvent, events } = useEvents();
     const { categories } = useCategories();
 
     const [eventName, setEventName] = useState("");
@@ -177,18 +180,17 @@ const NewEventScreen = () => {
             <TouchableOpacity 
                 onPress={() => {
                     const newEvent = {
-                        event_id: Date.now().toString(),
                         title: eventName,
-                        category: selectedCategory,
+                        categories: selectedCategory?.$id || null,
                         date: combinedDate,
                         end_date: combinedEndDate,
                         xp: experiencePoints,
-                        repetition: repeats,
                         facilitator: facilitator,
                         details: eventDetails,
                         location: location,
                         studyBuddy: studyBuddy,
-                        reminder: reminder,
+                        reminder: reminder !== "Never" ? getReminderDate(reminder, combinedDueDate) : null,
+                        repetition: repeats !== "Never" ? repeats : null,
                     };
                     addEvent(newEvent);
                     alert('Event saved!');
