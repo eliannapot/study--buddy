@@ -47,6 +47,20 @@ export const EventsProvider = ({ children }) => {
         }
     };
 
+    const editEvent = async (eventId, updatedEvent) => {
+        if (!eventId || !updatedEvent) {
+            Alert.alert("Error, no event or eventId provided");
+            return;
+        }
+        const response = await eventService.updateEvent(eventId, updatedEvent);
+        if (response.error) {
+            Alert.alert("Error", response.error);
+            return;
+        } else {
+            setEvents(events.map((event) => (event.$id === eventId ? response.data : event)));
+        }
+    }
+
     const deleteEvent = async (eventId) => {
         Alert.alert("Delete Event", "Are you sure you want to delete this event?", [
             {
@@ -70,7 +84,7 @@ export const EventsProvider = ({ children }) => {
     }
 
     return (
-        <EventsContext.Provider value={{ events, addEvent, deleteEvent }}>
+        <EventsContext.Provider value={{ events, addEvent, deleteEvent, editEvent }}>
             { loading ? (
                 <View style={{justifyContent: 'center', alignItems: 'center' }}> 
                     <ActivityIndicator size ="large" color={colors.primary}  />

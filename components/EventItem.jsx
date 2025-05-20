@@ -3,6 +3,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useEvents } from '../contexts/EventContext';
 
+import { router } from 'expo-router';
+
 import colors from '../app/config/colors';
 import EventModal from './EventModal';
 
@@ -17,6 +19,16 @@ const EventItem = ({ event }) => {
     };
 
     const { deleteEvent } = useEvents();
+
+    const handleEdit = () => {
+        console.log("Editing event:", selectedEvent);
+        setModalVisible(false);
+        router.push({
+            pathname: "/newEvent",
+            params: { eventId: selectedEvent.$id }
+        });
+    }
+
 
     const handleDelete = () => {
         console.log("Deleting event:", selectedEvent);
@@ -70,6 +82,7 @@ const EventItem = ({ event }) => {
                 event={selectedEvent}
                 onClose={() => setModalVisible(false)}
                 onDelete={handleDelete}
+                onEdit={handleEdit}
             />
 
         </View>
