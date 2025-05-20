@@ -1,5 +1,5 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import colors from '../app/config/colors';
 import EventModal from './EventModal';
@@ -37,7 +37,7 @@ const EventItem = ({ event }) => {
         ]}>
             <View style={{flex: 1, marginRight: 10}}>
                 <Text style={styles.eventTitle}> {event?.title || "Untitled event"}</Text>
-                <Text style={styles.eventCategory}>#{event?.category || "No Category"}</Text>
+                <Text style={styles.eventCategory}>#{event?.categories?.name || "None"}</Text>
             </View>
             <View>
                 <Text style={styles.eventDate}>{formatDateForEvent(event.date) || "No Date Set"}</Text>
@@ -45,7 +45,9 @@ const EventItem = ({ event }) => {
                     <Text style={styles.eventXP}>{event?.xp || 0} XP</Text>
                     <TouchableOpacity 
                         hitSlop={{ top: 40, bottom: 10, left: 40, right: 10 }}
-                        onPress={() => openEvent(event)}
+                        onPress={() => {
+                            console.log("Opening event:", event);
+                            openEvent(event)}}
                     >
                         <Text style={styles.showEventDetails}>...</Text>
                     </TouchableOpacity>

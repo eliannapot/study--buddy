@@ -30,7 +30,7 @@ const EventsContainer = ({events}) => {
             {events.length > 0 ? (
                 <FlatList
                         data = {events}
-                        keyExtractor={(item) => item.event_id.toString()}
+                        keyExtractor={(item) => item.$id.toString()}
                         renderItem={
                             ({item}) => <EventItem event={item} />
                         }      

@@ -34,7 +34,7 @@ const AllEventsScreen = () => {
                     sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
                 break;
                 case "Category":
-                    sorted.sort((a, b) => a.category.localeCompare(b.category));
+                    sorted.sort((a, b) => a.categories?.name || "None".localeCompare(b.categories?.name || "None"));
                 break;
                 case "XP":
                     sorted.sort((a, b) => b.xp - a.xp);
@@ -49,7 +49,7 @@ const AllEventsScreen = () => {
                     sortedPastEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
                 break;
                 case "Category":
-                    sortedPastEvents.sort((a, b) => a.category.localeCompare(b.category));
+                    sortedPastEvents.sort((a, b) => a.categories?.name || "None".localeCompare(b.categories?.name || "None"));
                 break;
                 case "XP":
                     sortedPastEvents.sort((a, b) => b.xp - a.xp);
@@ -98,7 +98,7 @@ const AllEventsScreen = () => {
                 </View>
                 <FlatList
                     data={sortedEvents}
-                    keyExtractor={(item) => item.event_id.toString()}
+                    keyExtractor={(item) => item.$id.toString()}
                     renderItem={({ item }) => <EventItem event={item} />}
                     contentContainerStyle={styles.listContainer}
                 />

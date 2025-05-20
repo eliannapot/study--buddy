@@ -1,9 +1,9 @@
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from "react-native";
-import Modal from "react-native-modal";
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Modal from "react-native-modal";
 
 import colors from "../app/config/colors";
-import candy from "../assets/images/candy.png"; 
+import candy from "../assets/images/candy.png";
 
 const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
     if (!event) 
@@ -65,7 +65,7 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
                 </View>
                 <View>
                     <View style={styles.categoryView}> 
-                        <Text style={styles.eventCategoryDue}>#{event.category}</Text>
+                        <Text style={styles.eventCategoryDue}>#{event?.categories?.name}</Text>
                     </View>
                     <Text style={styles.eventCategoryDue}>
                         {formatEventDateTime(event.date, event.end_date)}
