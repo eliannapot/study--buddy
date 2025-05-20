@@ -18,7 +18,7 @@ const CalendarScreen = () => {
 
     const isToday = (dateString) => dateString === today;
 
-    // 🧠 Filter tasks/events for a specific day
+    //Filter tasks/events for a specific day
     const getItemsForDay = (dateString) => {
         const itemsForDay = [
             ...events
@@ -31,7 +31,7 @@ const CalendarScreen = () => {
         return itemsForDay.sort((a, b) => a.time - b.time);
     };
 
-    // 🧠 Automatically update dailyItems whenever selected, tasks, or events change
+    //Automatically update dailyItems whenever selected, tasks, or events change
     const dailyItems = useMemo(() => getItemsForDay(selected), [selected, tasks, events]);
 
     const formatDate = (dateString) => {

@@ -49,6 +49,7 @@ const TaskItem = ({ task }) => {
     const isDone = task?.status === "Done"; // Check if the task is done
     
     return (
+        <>
         <View style={[
             styles.taskContainer,
             { backgroundColor: isDone 
@@ -72,16 +73,16 @@ const TaskItem = ({ task }) => {
                     </TouchableOpacity>
                 </View>
             </View>  
-
-            <TaskModal
-                visible={modalVisible}
-                task={selectedTask}
-                onClose={() => setModalVisible(false)}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-            />   
-                   
         </View>
+        <TaskModal
+            key={selectedTask?.$id}
+            visible={modalVisible}
+            task={selectedTask}
+            onClose={() => setModalVisible(false)}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+        />
+        </>
     );
 };
 
