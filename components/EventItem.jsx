@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { useEvents } from '../contexts/EventContext';
+
 import colors from '../app/config/colors';
 import EventModal from './EventModal';
 
@@ -13,6 +15,14 @@ const EventItem = ({ event }) => {
         setSelectedEvent(event);
         setModalVisible(true);
     };
+
+    const { deleteEvent } = useEvents();
+
+    const handleDelete = () => {
+        console.log("Deleting event:", selectedEvent);
+        deleteEvent(selectedEvent.$id); 
+        setModalVisible(false); 
+    }
 
     const formatDateForEvent = (isoString) => {
         const date = new Date(isoString);
@@ -55,9 +65,11 @@ const EventItem = ({ event }) => {
             </View>    
 
             <EventModal
+                key={selectedEvent?.$id}
                 visible={modalVisible}
                 event={selectedEvent}
                 onClose={() => setModalVisible(false)}
+                onDelete={handleDelete}
             />
 
         </View>

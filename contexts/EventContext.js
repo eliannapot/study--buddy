@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+
+import colors from '../app/config/colors';
 
 const EventsContext = createContext();
 
@@ -45,15 +47,51 @@ export const EventsProvider = ({ children }) => {
         }
     };
 
-    const deleteEvent = (eventId) => {
-        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
-    };
+    const deleteEvent = async (eventId) => {
+        Alert.alert("Delete Event", "Are you sure you want to delete this event?", [
+            {
+                text: "Cancel",
+                style: "cancel",
+            },
+            {
+                text: "Delete",
+                style: "destructive",
+                onPress: async () => {
+                    const response = await eventService.deleteEvent(eventId);
+                    if (response.error) {
+                        Alert.alert("Error", response.error);
+                        return;
+                    } else {
+                        setEvents(events.filter((event) => event.$id !== eventId));
+                    }
+                },
+            },
+        ]);
+    }
 
     return (
         <EventsContext.Provider value={{ events, addEvent, deleteEvent }}>
-            {children}
+            { loading ? (
+                <View style={{justifyContent: 'center', alignItems: 'center' }}> 
+                    <ActivityIndicator size ="large" color={colors.primary}  />
+                </View>
+            ): (
+                <>
+                    {error && <Text style={styles.errorText}>{error}</Text>}
+                    {children}
+                </>
+            )}
         </EventsContext.Provider>
     );
 };
+
+const styles = StyleSheet.create({
+    errorText: {
+        color: 'red',
+        textAlign: 'center',
+        marginBottom: 10,
+        fontSize: 16,
+    },
+});
 
 export const useEvents = () => useContext(EventsContext);

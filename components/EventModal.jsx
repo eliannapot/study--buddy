@@ -65,7 +65,7 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
                 </View>
                 <View>
                     <View style={styles.categoryView}> 
-                        <Text style={styles.eventCategoryDue}>#{event?.categories?.name}</Text>
+                        <Text style={styles.eventCategoryDue}>#{event?.categories?.name || "None"}</Text>
                     </View>
                     <Text style={styles.eventCategoryDue}>
                         {formatEventDateTime(event.date, event.end_date)}
