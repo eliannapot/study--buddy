@@ -59,9 +59,7 @@ const styles = StyleSheet.create({
     },
     seeAllDots: {
         fontFamily: "InterExtraBold",
-        fontSize: 24,
-        marginBottom: 2,
-        lineHeight: 14,
+        fontSize: 16,
     },
 });
 
