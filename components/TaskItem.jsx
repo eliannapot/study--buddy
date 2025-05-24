@@ -20,7 +20,7 @@ const TaskItem = ({ task }) => {
         setModalVisible(true);
     };
 
-    const { deleteTask } = useTasks(); 
+    const { deleteTask, editTask } = useTasks(); 
 
     const handleEdit = () => {
         console.log("Editing task:", selectedTask);
@@ -36,6 +36,12 @@ const TaskItem = ({ task }) => {
         deleteTask(selectedTask.$id); 
         setModalVisible(false); 
     }
+
+    const handleStatusChange = (taskId, data) => {
+        const taskToUpdate = { ...selectedTask, ...data };
+        editTask(taskId ,taskToUpdate);
+    };
+
 
     const formatDateForTasks = (isoString) => {
         const date = new Date(isoString);
@@ -81,6 +87,7 @@ const TaskItem = ({ task }) => {
             onClose={() => setModalVisible(false)}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            onStatusChange={handleStatusChange}
         />
         </>
     );

@@ -1,19 +1,27 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
+import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Modal from "react-native-modal";
 
 import { Picker } from "@react-native-picker/picker";
 import colors from "../app/config/colors";
 import candy from "../assets/images/candy.png";
 
-const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
+const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange }) => {
     
     if (!task) 
         return null; 
 
-    const [taskStatus, setTaskStatus] = useState(task.status);
-    
+    const [taskStatus, setTaskStatus] = useState(task.status || "Not Started"); // Default to "Not Started" if status is not set
+    const handleStatusChange = (value) => {
+    if (value !== task.status) {
+        onStatusChange(task.$id, { status: value });
+        setTaskStatus(value); // Update the local state with the new status
+        Alert.alert("Task Updated", `Status changed to "${value}"`);
+    }
+};
+
+
     //Customising the picker item style based on the color scheme of the device
     const colorScheme = useColorScheme();
     const pickerItemStyling = {
@@ -118,7 +126,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete }) => {
                 <View style={styles.pickerContainer}>
                     <Picker 
                         selectedValue={taskStatus} 
-                        onValueChange={(value) => setTaskStatus(value)} 
+                        onValueChange={handleStatusChange} 
                         themeVariant="light"
                         dropdownIconColor={colors.primary}
                         itemStyle={[pickerItemStyling, styles.pickerText]}
