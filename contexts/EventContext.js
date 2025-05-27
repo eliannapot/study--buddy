@@ -23,7 +23,7 @@ export const EventsProvider = ({ children }) => {
 
     const fetchEvents = async () => {
         setLoading(true);
-        const response = await eventService.getEvents();
+        const response = await eventService.getEvents(user.$id);
         console.log("Events fetched:", response);
         if (response.error) {
             setError(response.error);

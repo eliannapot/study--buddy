@@ -20,7 +20,7 @@ const taskService = {
         if (response.error) {
             return {error: response.error};
         }
-        return {data: response};
+        return response;
     },
 
     //Create Task

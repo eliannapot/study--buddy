@@ -11,7 +11,7 @@ const categoryService = {
         if (response.error) {
             return {error: response.error};
         }
-        return {data: response};
+        return response;
     },
 };
 

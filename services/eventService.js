@@ -1,4 +1,4 @@
-import { ID } from 'react-native-appwrite';
+import { ID, Query } from 'react-native-appwrite';
 import databaseService from './databaseService.js';
 
 // Appwrite database and collection id
@@ -15,12 +15,20 @@ const cleanAppwriteData = (data) => {
 const eventService = {
 
     // Get Events
-    async getEvents() {
-        const response = await databaseService.listDocuments(dbId, colId);
-        if (response.error) {
-            return { error: response.error };
+    async getEvents(userId) {
+        if (!userId) {
+            console.error("No user ID provided in getEvents");
+            return { data: [], error: "No user ID provided" };
         }
-        return { data: response };
+        try {
+            const response = await databaseService.listDocuments(dbId, colId, [
+                Query.equal('user_id', userId),
+            ]);
+            return response;
+        } catch (error) {
+            console.log("Error fetching events:", error);
+            return { data: [], error: error.message };
+        }
     },
 
     // Create Event

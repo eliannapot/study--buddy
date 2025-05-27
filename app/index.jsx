@@ -19,7 +19,7 @@ const LandingScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -42,6 +42,12 @@ const LandingScreen = () => {
 }
 
 const styles = StyleSheet.create({
+  centeredContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
     justifyContent: "center",

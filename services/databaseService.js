@@ -2,16 +2,17 @@ import { database } from "./appwrite";
 
 const databaseService = {
 
-    //List Documents
-    async listDocuments(dbId, colId) {
+    // List Documents
+    async listDocuments(dbId, colId, queries = []) {
         try {
-            const response = await database.listDocuments(dbId, colId); //Appwrite SDK function
-            return response.documents || [];
+            const response = await database.listDocuments(dbId, colId, queries);
+            return { data: response.documents ?? [], error: null };  // return the array directly under `data`
         } catch (error) {
             console.error("Error fetching documents:", error.message);
-            return {error: error.message}; 
+            return { data: [], error: error.message };
         }
     },
+
 
     //Create Document
     async createDocument(dbId, colId, data, id = null) {
