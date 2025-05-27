@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import EventsContainer from '../../components/EventsContainer';
@@ -5,10 +6,16 @@ import StreakIndicator from '../../components/StreakIndicator';
 import TasksContainer from '../../components/TasksContainer';
 import XPindicator from '../../components/XPIndicator';
 
+import { useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import { useEvents } from '../../contexts/EventContext';
 import { useTasks } from '../../contexts/TaskContext';
 
 const DashboardScreen = () => {
+    
+    const router = useRouter();
+    const { user, loading } = useAuth();
+
     const { tasks } = useTasks();
     const { events } = useEvents();
 
@@ -35,6 +42,12 @@ const DashboardScreen = () => {
         if (item.type === 'events') return <EventsContainer events={item.data} />;
         return null;
     };
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.replace('/auth');
+        }
+    }, [loading, user]);
 
     return (
         <FlatList

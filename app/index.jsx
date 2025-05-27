@@ -1,11 +1,30 @@
 import { useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect } from "react";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { useAuth } from "../contexts/AuthContext";
+import colors from "./config/colors";
 
 const LandingScreen = () => {
   
+  const { user, loading } = useAuth();
   const router = useRouter();
   
+  useEffect(() => {
+    // Redirect to dashboard if user is logged in
+    if (!loading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, loading]);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <View
       style={styles.container}
@@ -14,7 +33,7 @@ const LandingScreen = () => {
       <TouchableOpacity 
         style={styles.button} 
         onPress={() => { 
-          router.replace("/auth")
+          router.replace("/dashboard")
       }}>
         <Text>Click me to navigate</Text>
       </TouchableOpacity>

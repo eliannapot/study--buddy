@@ -1,16 +1,15 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
-import { useRouter } from 'expo-router';
 
 import logo from '../../assets/images/mylogocut.png';
 import colors from '../config/colors';
 
-//import {useAuth} from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const AuthScreen = () => {
 
-    //const {login, register} = useAuth();
+    const {login, register} = useAuth();
     const router = useRouter();
 
     const [username, setUsername] = useState('');
@@ -32,10 +31,10 @@ const AuthScreen = () => {
         }
         let response;
         if(isRegistering) {
-            //response = await register(email, password);
+            response = await register(email, password);
             console.log('Registering...');
         } else {
-            //response = await login(email, password);
+            response = await login(email, password);
             console.log('Logging in...');
         }
         if (response?.error) {

@@ -2,13 +2,15 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 
 import colors from '../app/config/colors';
-
-const EventsContext = createContext();
-
+import { useAuth } from './AuthContext';
 //import { events as initialEvents } from '../data/events';
 import eventService from '../services/eventService';
 
+const EventsContext = createContext();
+
 export const EventsProvider = ({ children }) => {
+
+    const { user } = useAuth();
     
     //const [events, setEvents] = useState(initialEvents);
     const [events, setEvents] = useState([]);
@@ -38,7 +40,7 @@ export const EventsProvider = ({ children }) => {
             Alert.alert("Error, no event provided");
             return;
         }
-        const response = await eventService.addEvent(event);
+        const response = await eventService.addEvent(user.$id, event);
         if (response.error) {
             Alert.alert("Error", response.error);
             return;

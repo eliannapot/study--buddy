@@ -1,11 +1,13 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+import { useAuth } from "../../contexts/AuthContext";
 
 import colors from '../config/colors';
 
 const SettingsScreen = () => {
+    const { user, logout } = useAuth();
 
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -127,7 +129,8 @@ const SettingsScreen = () => {
                 {/* Logout Button */}
                 <TouchableOpacity 
                     style={styles.button}
-                    onPress={()=> router.push("/auth")}
+                    // onPress={()=> router.push("/auth")}
+                    onPress={logout}
                 >
                     <Text style={styles.buttonText}>Log Out</Text>
                     <Ionicons name="log-out-outline" size={24} style={{ marginLeft: 10 }} />

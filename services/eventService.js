@@ -24,13 +24,14 @@ const eventService = {
     },
 
     // Create Event
-    async addEvent(data) {
+    async addEvent(user_id, data) {
         if (!data) {
             return {error: "No data provided"};
         }
         const dataToSend = {
             ...data,
             createdAt: new Date().toISOString(),
+            user_id: user_id
         }
         const response = await databaseService.createDocument(
             dbId,

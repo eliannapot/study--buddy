@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 
 import colors from "./config/colors";
 
+import { AuthProvider } from "../contexts/AuthContext";
 import { CategoryProvider } from "../contexts/CategoryContext";
 import { EventsProvider } from "../contexts/EventContext";
 import { TasksProvider } from "../contexts/TaskContext";
@@ -64,6 +65,7 @@ const RootLayout = () => {
   
   return (
   <>
+  <AuthProvider>
   <CategoryProvider>
   <TasksProvider>
   <EventsProvider>
@@ -95,6 +97,7 @@ const RootLayout = () => {
   </EventsProvider>
   </TasksProvider>
   </CategoryProvider>
+  </AuthProvider>
   </>
   );
 };
