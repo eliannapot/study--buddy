@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, Button } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import XPindicator from '../../components/XPIndicator';
 import StreakIndicator from '../../components/StreakIndicator';
+import XPindicator from '../../components/XPIndicator';
 
 import { getXPStats } from '../../utils/statisticsUtils';
 
-import colors from '../../app/config/colors';
-import Icon from "react-native-vector-icons/Ionicons";
 import { Picker } from '@react-native-picker/picker';
+import Icon from "react-native-vector-icons/Ionicons";
+import colors, { adjustableColors } from '../../app/config/colors';
 import StatisticsChart from '../../components/StatisticsChart';
 
 const ProfileScreen = () => {
@@ -85,7 +85,11 @@ const ProfileScreen = () => {
             <View style={styles.statisticsContainer}>
                 <Text style={styles.statisticsTitle}>My Statistics :</Text>
                 <View style={styles.picker}>
-                <Picker selectedValue={dropdown} onValueChange={(value) => setDropdown(value)}>
+                <Picker 
+                    selectedValue={dropdown} 
+                    onValueChange={(value) => setDropdown(value)}
+                    dropdownIconColor={adjustableColors.adjustableArrowColor}
+                >
                     <Picker.Item label="This week" value="week"/>
                     <Picker.Item label="This month" value="month" />
                     <Picker.Item label="All time" value="alltime" />
@@ -154,6 +158,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         borderColor: colors.primary,
+        backgroundColor: adjustableColors.adjustableBackgroundColor,
         width: "60%",
     },
 

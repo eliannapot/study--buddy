@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import colors from '../app/config/colors';
+import colors, { adjustableColors } from '../app/config/colors';
 
 const ReminderPicker = ({ value, onChange }) => (
     <View style={styles.groupContainer}>
@@ -13,7 +13,7 @@ const ReminderPicker = ({ value, onChange }) => (
         <Picker
             value={value}
             onValueChange={(itemValue) => onChange(itemValue)}
-            dropdownIconColor={colors.primary}
+            dropdownIconColor={adjustableColors.adjustableArrowColor}
         >
             <Picker.Item label="Never" value="Never" />
             <Picker.Item label="30 minutes before" value="30 minutes before" />
@@ -41,7 +41,8 @@ const styles = StyleSheet.create({
     height: 30,
     borderWidth: 0.5,
     borderColor: colors.primary,
-    backgroundColor: colors.hexToRGBA(colors.secondary, 0.15),
+    backgroundColor: adjustableColors.adjustableBackgroundColor,
+    //backgroundColor: colors.hexToRGBA(colors.secondary, 0.15),
     borderRadius: 20,
     marginLeft: 5,
     justifyContent: 'center',

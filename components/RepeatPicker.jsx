@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { StyleSheet, Text, View } from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import colors from '../app/config/colors';
+import colors, { adjustableColors } from '../app/config/colors';
 
 const RepeatPicker = ({ value, onChange }) => (
   <View style={styles.groupContainer}>
@@ -14,7 +14,7 @@ const RepeatPicker = ({ value, onChange }) => (
         selectedValue={value}
         onValueChange={onChange}
 //        onValueChange={(itemValue) => setRepeats(itemValue)}
-        dropdownIconColor={colors.primary}
+        dropdownIconColor={adjustableColors.adjustableArrowColor}
       >
         <Picker.Item label="Never" value="Never" />
         <Picker.Item label="Daily" value="Daily" />
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderWidth: 0.5,
     borderColor: colors.primary,
-    backgroundColor: colors.hexToRGBA(colors.secondary, 0.15),
+    backgroundColor: adjustableColors.adjustableBackgroundColor,
     borderRadius: 20,
     marginLeft: 5,
     justifyContent: 'center',
