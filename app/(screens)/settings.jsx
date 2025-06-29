@@ -1,5 +1,5 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useAuth } from "../../contexts/AuthContext";
@@ -12,10 +12,10 @@ const SettingsScreen = () => {
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
-    const [username, setUsername] = React.useState('emily876');
-    const [email, setEmail] = React.useState('em@emai.com');
-    const [name, setName] = React.useState('Emily');
-    const [password, setPassword] = React.useState('12345678');
+    // const [username, setUsername] = useState('emily876');
+    const [email, setEmail] = useState('em@emai.com');
+    const [name, setName] = useState('Emily');
+    const [password, setPassword] = useState('12345678');
 
     return (
         <ScrollView style={styles.container}>
@@ -25,7 +25,7 @@ const SettingsScreen = () => {
                 <Text style={styles.header}>Profile Information</Text>
                     
                 {/* Username */}
-                <View style={styles.rowContainer}>
+                {/* <View style={styles.rowContainer}>
                     <Text style={styles.title}>
                         Username:
                     </Text>
@@ -37,7 +37,7 @@ const SettingsScreen = () => {
                         onChangeText={setUsername}
                         textContentType='username'
                     />
-                </View>
+                </View> */}
                 
                 {/* Email */}
                 <View style={styles.rowContainer}>

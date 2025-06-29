@@ -11,10 +11,18 @@ const LandingScreen = () => {
   const router = useRouter();
   
   useEffect(() => {
+      
+    if (loading) return;
+
     // Redirect to dashboard if user is logged in
-    if (!loading && user) {
+    if (user) {
       router.replace("/dashboard");
     }
+    else if (!user) {
+      router.replace("/auth");
+    }
+
+    console.log("User:", user);
   }, [user, loading]);
 
   if (loading) {
@@ -41,8 +49,10 @@ const LandingScreen = () => {
   );
 }
 
+
 const styles = StyleSheet.create({
   centeredContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",

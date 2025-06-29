@@ -6,9 +6,9 @@ import { account } from './appwrite';
 const authService = {
 
     //Register a user
-    async register(email, password) {
+    async register(email, password, name) {
         try {
-            const response = await account.create(ID.unique(), email, password);
+            const response = await account.create(ID.unique(), email, password, name);
             return response;
         } catch (error) {
             return {
@@ -41,9 +41,7 @@ const authService = {
     //Logout user
     async logout() {
         try {
-            console.log("Trying the logging out...");
             await account.deleteSession('current');
-            console.log("Logged out successfully");
         } catch (error) {
             return {
                 error: error.message || "Logout failed. Try again."

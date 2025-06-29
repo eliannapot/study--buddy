@@ -2,22 +2,31 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 
 import colors from '../app/config/colors';
+import { useAuth } from './AuthContext';
 
 const TasksContext = createContext();
+
 
 //import { tasks as initialTasks } from '../data/tasks'; 
 import taskService from '../services/taskService';
 
 export const TasksProvider = ({ children }) => {
-
+    
+    const { user } = useAuth(); 
+    
     //const [tasks, setTasks] = useState(initialTasks); 
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => { 
+        console.log("TasksProvider mounted, user:", user?.$id);
+        // if (user?.$id) {
+        //     fetchTasks();
+        // }
         fetchTasks();
-    }, []);
+        setLoading(false);
+    }, [user]);
 
     const fetchTasks = async () => {
         setLoading(true);

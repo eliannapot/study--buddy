@@ -8,7 +8,6 @@ const categoryService = {
 
     // Get Categories 
     async getCategories(userId) {
-        console.log("(Service) Fetching categories for user ID:", userId, "dbId:", dbId, "colId:", colId);
         if (!userId) {
             console.error("No user ID provided in getCategories");
             return { data: [], error: "No user ID provided" };
@@ -17,7 +16,7 @@ const categoryService = {
             const response = await databaseService.listDocuments(dbId, colId, [
                 Query.equal('user_id', userId),
             ]);
-            console.log("(Service) Categories fetched:", response);
+            console.log("Categories fetched:", response);
             return response; 
         } catch (error) {
             console.log("Error fetching categories:", error);
@@ -27,7 +26,6 @@ const categoryService = {
 
     // Create Category
     async addCategory(user_id, data) {
-        console.log("(Service) Adding category with data:", data);
         if (!data) {
             return { error: "Missing data" };
         }

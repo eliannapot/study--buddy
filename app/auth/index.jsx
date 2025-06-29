@@ -12,17 +12,18 @@ const AuthScreen = () => {
     const {login, register} = useAuth();
     const router = useRouter();
 
-    const [username, setUsername] = useState('');
+    // const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
     const [isRegistering, setIsRegistering] = useState(false);  //If true, show register form, else login
     const [error, setError] = useState(false);
 
     const handleAuth = async () => {
-        if (!username.trim() || !password.trim()) {
-            setError('Username and password are required');
+        if (!email.trim() || !password.trim()) {
+            setError('Email and password are required');
             return;
         }
         if (isRegistering && password !== confirmPassword) {
@@ -31,7 +32,7 @@ const AuthScreen = () => {
         }
         let response;
         if(isRegistering) {
-            response = await register(email, password);
+            response = await register(email, password, name);
             console.log('Registering...');
         } else {
             response = await login(email, password);
@@ -56,7 +57,7 @@ const AuthScreen = () => {
             </View>
             
             {/* Username */}
-            <View style={styles.rowContainer}>
+            {/* <View style={styles.rowContainer}>
                 <Text style={styles.title}>
                     Username:
                 </Text>
@@ -68,10 +69,9 @@ const AuthScreen = () => {
                     onChangeText={setUsername}
                     textContentType='username'
                 />
-            </View>
+            </View> */}
 
             {/* Email */}
-            {isRegistering && (
             <View style={styles.rowContainer}>
                 <Text style={styles.title}>
                     Email:
@@ -86,7 +86,6 @@ const AuthScreen = () => {
                     keyboardType='email-address'
                 />
             </View>
-            )}
 
             {/* Name */}
             {isRegistering && (

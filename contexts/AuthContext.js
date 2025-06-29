@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
 
     const checkUser = async () => {
         setLoading(true);
-
         const response = await authService.getUser();
         if (response?.error) {
             setUser(null);
@@ -33,8 +32,8 @@ export const AuthProvider = ({ children }) => {
         return {success: true};
     };
 
-    const register = async (email, password) => {
-        const response = await authService.register(email, password);
+    const register = async (email, password, name) => {
+        const response = await authService.register(email, password, name);
         if (response?.error) {
             return response;
         }
@@ -44,6 +43,7 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         await authService.logout();
         setUser(null);
+        setLoading(false);
         await checkUser(); 
     };
 

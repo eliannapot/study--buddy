@@ -24,6 +24,7 @@ const eventService = {
             const response = await databaseService.listDocuments(dbId, colId, [
                 Query.equal('user_id', userId),
             ]);
+            console.log("Events fetched:", response);
             return response;
         } catch (error) {
             console.log("Error fetching events:", error);

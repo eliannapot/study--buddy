@@ -58,7 +58,7 @@ const DashboardScreen = () => {
             ListHeaderComponent={
                 <View style={styles.welcomeContainer}>
                     <View style={styles.welcomeMessage}>
-                        <Text style={styles.welcomeText}>Hi Emily!</Text>
+                        {/* <Text style={styles.welcomeText}>Hi {user.name}!</Text> */}
                         <Text style={styles.welcomeText}>Ready to start the day?</Text>
                     </View>
                     <XPindicator userXP={200} candySize={50} />

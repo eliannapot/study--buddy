@@ -18,9 +18,12 @@ export const EventsProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // console.log("EventsProvider mounted, user:", user);
-        fetchEvents();
-    }, []);
+        console.log("EventProvider mounted, user:", user?.$id);
+        if (user?.$id) {
+            fetchEvents();
+        }
+        setLoading(false);
+    }, [user]);
 
     const fetchEvents = async () => {
         setLoading(true);
