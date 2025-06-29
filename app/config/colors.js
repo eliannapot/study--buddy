@@ -18,8 +18,9 @@ const colors = {
   darkbackground: '#333', // black-ish
 
   blueText: '#16325B',
-  grayText: '3B3F5E',
+  grayText: '#3B3F5E',
 
+  //black: '#000000',
   black: '#000',
   white: '#fff',
   gray: '#515151',

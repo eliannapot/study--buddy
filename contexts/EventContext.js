@@ -18,13 +18,14 @@ export const EventsProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // console.log("EventsProvider mounted, user:", user);
         fetchEvents();
     }, []);
 
     const fetchEvents = async () => {
         setLoading(true);
         const response = await eventService.getEvents(user.$id);
-        console.log("Events fetched:", response);
+        // console.log("Events fetched:", response);
         if (response.error) {
             setError(response.error);
             Alert.alert("Error", response.error);
