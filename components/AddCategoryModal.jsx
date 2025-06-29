@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Modal from 'react-native-modal';
 import colors from '../app/config/colors';
 
 const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
@@ -18,31 +19,34 @@ const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
 
   return (
     <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+      isVisible={visible}
+      onBackdropPress={onClose}       
+      animationIn="zoomIn"
+      animationOut="zoomOut"
+      style={styles.modalContainer}
     >
-      <View style={styles.modalBackground}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>New Category</Text>
-          <TextInput
-            value={newCategoryName}
-            onChangeText={setNewCategoryName}
-            style={styles.input}
-            placeholder="Enter category name"
-            placeholderTextColor="#888"
-          />
-          <View style={styles.modalButtons}>
-            <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSubmit} style={styles.confirmButton}>
-              <Text style={styles.confirmButtonText}>Add</Text>
-            </TouchableOpacity>
+        <View style={styles.innerContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.modalTitle}>New Category</Text>
+          </View>
+          <View style={styles.contentContainer}>
+            <TextInput
+              value={newCategoryName}
+              onChangeText={setNewCategoryName}
+              style={styles.input}
+              placeholder="Enter category name"
+              placeholderTextColor={colors.blueText}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleSubmit} style={styles.confirmButton}>
+                <Text style={styles.confirmButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
     </Modal>
   );
 };
@@ -50,29 +54,34 @@ const AddCategoryModal = ({ visible, onClose, onAddCategory }) => {
 export default AddCategoryModal;
 
 const styles = StyleSheet.create({
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    //backgroundColor: colors.hexToRGBA(colors.black, 0.5),
+  modalContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalContainer: {
-    width: '80%',
+  innerContainer: {
+    width: '100%',
     backgroundColor: colors.lightbackground,
-    padding: 20,
     borderRadius: 10,
     elevation: 10,
   },
+  titleContainer: {
+    backgroundColor: colors.primary,
+    padding: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
   modalTitle: {
     fontSize: 18,
-    marginBottom: 10,
     fontFamily: 'InterSemiBold',
-    textAlign: 'center',
+    marginBottom: 5,
+    color: colors.white,
+  },
+  contentContainer: {
+    padding: 10,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.primary,
     borderRadius: 5,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -85,13 +94,27 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     marginRight: 15,
+    padding: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    borderColor: colors.red,
+    borderWidth: 1,
   },
   cancelButtonText: {
-    color: 'red',
+    color: colors.red,
+    fontFamily: 'InterRegular',
     fontSize: 16,
   },
+  confirmButton: {
+    padding: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
   confirmButtonText: {
-    color: 'green',
+    color: colors.primary,
+    fontFamily: 'InterRegular',
     fontSize: 16,
   },
 });
