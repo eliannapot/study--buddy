@@ -1,9 +1,19 @@
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import colors from '../app/config/colors';
+import { FontAwesome5 } from '@expo/vector-icons';
 
-const CategorySelector = ({ categories, selectedCategory, onCategorySelect }) => {
+import colors from '../app/config/colors';
+import { useCategories } from '../contexts/CategoryContext';
+
+import AddCategoryModal from './AddCategoryModal';
+
+const CategorySelector = ({ selectedCategory, onCategorySelect }) => {
   
+  const { categories, addCategory} = useCategories();
+  const [modalVisible, setModalVisible] = useState(false);
+
+
   const splitIntoRows = (items, rows) => {
     const rowItems = [[], []];
     items.forEach((item, index) => {
@@ -12,9 +22,18 @@ const CategorySelector = ({ categories, selectedCategory, onCategorySelect }) =>
     return rowItems;
   };
 
-  const [row1, row2] = splitIntoRows(categories, 2);
+  const [row1, row2] = splitIntoRows(categories || [], 2);
+
+  const handleAddCategory = async (category) => {
+      try {
+        await addCategory(category);
+      } catch (error) {
+        Alert.alert('Error', 'Failed to add category');
+      }
+  };
   
   return (
+    <>
     <ScrollView 
       contentContainerStyle={styles.scrollContainer} 
       horizontal
@@ -40,10 +59,25 @@ const CategorySelector = ({ categories, selectedCategory, onCategorySelect }) =>
                 </Text>
               </TouchableOpacity>
             ))}
+            {rowIndex === 1 && (
+              <View style={{ alignContent: 'center', justifyContent: 'center'}}> 
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <FontAwesome5 name='plus-circle' size={25} color={colors.primary} />
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         ))}
       </View>
     </ScrollView>
+
+    <AddCategoryModal
+      visible={modalVisible}
+      onClose={() => setModalVisible(false)}
+      onAddCategory={handleAddCategory}
+    />
+
+    </>
   );
 };
   
@@ -75,6 +109,7 @@ const CategorySelector = ({ categories, selectedCategory, onCategorySelect }) =>
     selectedText: {
       fontWeight: 'InterRegular',
     },
+    
   });
 
   export default CategorySelector;

@@ -66,7 +66,7 @@ const TimerScreen = () => {
             </View>
 
             <CategorySelector
-                    categories={categories}
+                    // categories={categories}
                     selectedCategory={selectedCategory}
                     onCategorySelect={setSelectedCategory}
                 />

@@ -97,7 +97,7 @@ const EventFormScreen = () => {
                 <View style={styles.groupContainer}>
                     <Text style={styles.groupName}>Category:</Text>
                     <CategorySelector
-                        categories={categories}
+                        // categories={categories}
                         selectedCategory={selectedCategory}
                         onCategorySelect={setSelectedCategory}
                     />
