@@ -1,10 +1,10 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Modal from 'react-native-modal';
 
 import { useAuth } from "../../contexts/AuthContext";
 
+import ConfirmPasswordModal from '../../components/ConfirmPasswordModal';
 import colors from '../config/colors';
 
 const SettingsScreen = () => {
@@ -173,27 +173,14 @@ const SettingsScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            <Modal isVisible={showModal}>
-                <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-                    <Text style={{ fontSize: 16, marginBottom: 10 }}>Enter your current password to confirm:</Text>
-                    <TextInput
-                        secureTextEntry
-                        value={currentPasswordInput}
-                        onChangeText={setCurrentPasswordInput}
-                        placeholder="Current Password"
-                        style={styles.input}
-                    />
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-                    <TouchableOpacity onPress={() => setShowModal(false)}>
-                        <Text style={{ color: 'red' }}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleUpdate}>
-                        <Text style={{ color: 'green' }}>Confirm</Text>
-                    </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-
+            <ConfirmPasswordModal
+                visible={showModal}
+                onClose={() => setShowModal(false)}
+                onConfirm={(password) => {
+                    setCurrentPasswordInput(password);
+                    handleUpdate(); // or your custom handler
+                }}
+            />
 
         </ScrollView>
     );
