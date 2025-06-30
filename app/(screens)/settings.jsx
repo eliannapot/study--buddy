@@ -1,21 +1,45 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Modal from 'react-native-modal';
 
 import { useAuth } from "../../contexts/AuthContext";
 
 import colors from '../config/colors';
 
 const SettingsScreen = () => {
-    const { user, logout } = useAuth();
+    const { user, logout, verifyPassword, updateUser } = useAuth();
 
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
     // const [username, setUsername] = useState('emily876');
-    const [email, setEmail] = useState('em@emai.com');
-    const [name, setName] = useState('Emily');
-    const [password, setPassword] = useState('12345678');
+    const [email, setEmail] = useState(user.email || '');
+    const [name, setName] = useState(user.name || '');
+    const [password, setPassword] = useState('');
+
+    const [showModal, setShowModal] = useState(false);
+    const [currentPasswordInput, setCurrentPasswordInput] = useState('');
+
+
+    const handleUpdate = async () => {
+        setShowModal(false);
+        const valid = await verifyPassword(currentPasswordInput);
+        if (!valid) {
+            Alert.alert("Error", "Incorrect password.");
+            return;
+        }
+        console.log("Updating user with:", { email, name, password, currentPasswordInput });
+        const result = await updateUser({ email, name, password, oldPassword: currentPasswordInput });
+        console.log("Update result:", result);
+        if (result.success) {
+            Alert.alert("Success", "Profile updated successfully.");
+        } else {
+            Alert.alert("Update Failed", result.error || "Something went wrong.");
+        }
+        setCurrentPasswordInput('');
+    };
+
 
     return (
         <ScrollView style={styles.container}>
@@ -46,7 +70,7 @@ const SettingsScreen = () => {
                     </Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="email@email.com"
+                        placeholder={email || ''}
                         placeholderTextColor={colors.blueText}
                         value={email}
                         onChangeText={setEmail}
@@ -62,7 +86,7 @@ const SettingsScreen = () => {
                     </Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="Emily"
+                        placeholder={name || ''}
                         placeholderTextColor={colors.blueText}
                         value={name}
                         onChangeText={setName}
@@ -77,7 +101,7 @@ const SettingsScreen = () => {
                     </Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="****"
+                        placeholder={'****'}
                         placeholderTextColor={colors.blueText}
                         value={password}
                         onChangeText={setPassword}
@@ -86,7 +110,10 @@ const SettingsScreen = () => {
                     />
                 </View>
 
-                <TouchableOpacity style={[styles.button, { alignSelf: 'center' }]}>
+                <TouchableOpacity 
+                    style={[styles.button, { alignSelf: 'center' }]}
+                    onPress={() => setShowModal(true)}
+                >
                     <Text style={styles.buttonText}>Update</Text>
                 </TouchableOpacity>
 
@@ -145,6 +172,28 @@ const SettingsScreen = () => {
                     <FontAwesome name="trash" size={24} style={{ marginLeft: 10 }} />
                 </TouchableOpacity>
             </View>
+
+            <Modal isVisible={showModal}>
+                <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+                    <Text style={{ fontSize: 16, marginBottom: 10 }}>Enter your current password to confirm:</Text>
+                    <TextInput
+                        secureTextEntry
+                        value={currentPasswordInput}
+                        onChangeText={setCurrentPasswordInput}
+                        placeholder="Current Password"
+                        style={styles.input}
+                    />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => setShowModal(false)}>
+                        <Text style={{ color: 'red' }}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleUpdate}>
+                        <Text style={{ color: 'green' }}>Confirm</Text>
+                    </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
 
         </ScrollView>
     );

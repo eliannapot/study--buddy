@@ -47,7 +47,44 @@ const authService = {
                 error: error.message || "Logout failed. Try again."
             }
         }
-    }
+    },
+
+    //Verify user password
+    async verifyPassword(email, password) {
+        try {
+            const session = await account.createEmailPasswordSession(email, password);
+            await account.deleteSession(session.$id); 
+            return true;
+        } catch (error) {
+            return false;
+        }
+    },
+
+    //Update user information
+    async updateUser({ email, name, password, oldPassword }) {
+        try {
+            const current = await account.get(); // get current user data
+            // Update email only if it's different
+            if (email && email !== current.email) {
+                await account.updateEmail(email, oldPassword); // use current password to update email
+            }
+            // Update name only if it's different
+            if (name && name !== current.name) {
+                await account.updateName(name);
+            }
+            // Update password only if it's not empty
+            if (password && password.length >= 8) {
+                await account.updatePassword(password, oldPassword);
+            }
+            return { success: true };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message || "Failed to update profile."
+            };
+        }
+    },
+
 };
 
 export default authService;

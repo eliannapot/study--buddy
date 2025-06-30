@@ -5,6 +5,7 @@ import authService from "../services/authService";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -47,8 +48,22 @@ export const AuthProvider = ({ children }) => {
         await checkUser(); 
     };
 
+    const verifyPassword = async (password) => {
+        console.log("(Context) Verifying password for user:", user.email);
+        const response = await authService.verifyPassword(user.email, password);
+        console.log("(Context) Password verification response:", response);
+        return !response?.error;
+    };
+
+    const updateUser = async (updates) => {
+        const response = await authService.updateUser(updates); // { email, name, password }
+        if (response?.error) return { success: false, error: response.error };
+        await checkUser(); // refresh state
+        return { success: true };
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, verifyPassword, updateUser  }}>
             {children}
         </AuthContext.Provider>
         
