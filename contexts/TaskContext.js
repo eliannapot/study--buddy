@@ -21,16 +21,15 @@ export const TasksProvider = ({ children }) => {
 
     useEffect(() => { 
         console.log("TasksProvider mounted, user:", user?.$id);
-        // if (user?.$id) {
-        //     fetchTasks();
-        // }
-        fetchTasks();
+        if (user?.$id) {
+            fetchTasks();
+        }
         setLoading(false);
     }, [user]);
 
     const fetchTasks = async () => {
         setLoading(true);
-        const response = await taskService.getTasks();
+        const response = await taskService.getTasks(user.$id);
         // console.log("Tasks fetched:", response);
         if (response.error) {
             setError(response.error);
@@ -47,7 +46,7 @@ export const TasksProvider = ({ children }) => {
             Alert.alert("Error, no task provided");
             return;
         }
-        const response = await taskService.addTask(task);
+        const response = await taskService.addTask(user.$id, task);
         if (response.error) {
             Alert.alert("Error", response.error);
             return;

@@ -1,4 +1,4 @@
-import { ID } from "react-native-appwrite";
+import { ID, Query } from "react-native-appwrite";
 import databaseService from './databaseService.js';
 
 //Appwrite database and collection id
@@ -15,34 +15,45 @@ const cleanAppwriteData = (data) => {
 const taskService = {
 
     //Get Tasks
-    async getTasks() {
-        const response = await databaseService.listDocuments(dbId, colId); 
-        if (response.error) {
-            return {error: response.error};
+    async getTasks(userId) {
+        if (!userId) {
+            console.error("No user ID provided in getTasks");
+            return { data: [], error: "No user ID provided" };
         }
-        return response;
+        try {
+            const response = await databaseService.listDocuments(dbId, colId, [
+                Query.equal('user_id', userId),
+            ]);
+            return response;
+        } catch (error) {
+            console.log("Error fetching tasks:", error);
+            return { data: [], error: error.message };
+        }
     },
 
-    //Create Task
-    async addTask(data) {
+
+    // Create Task
+    async addTask(user_id, data) {
         if (!data) {
             return {error: "No data provided"};
         }
         const dataToSend = {
             ...data,
             createdAt: new Date().toISOString(),
+            user_id: user_id,
         }
         const response = await databaseService.createDocument(
             dbId,
             colId,
             dataToSend,
-            ID.unique(), // Generate a unique ID for the document
+            ID.unique()
         );
         if (response?.error) {
             return {error: response.error};
         }
         return {data: response};
     },
+
 
     //Update Task
     async updateTask(id, data) {
