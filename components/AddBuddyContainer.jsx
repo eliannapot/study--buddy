@@ -1,14 +1,18 @@
-import {View, Text, TextInput, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import addIcon from '../assets/images/plus.png';
 import colors from '../app/config/colors';
+import addIcon from '../assets/images/plus.png';
 
 const AddBuddyContainer = () => {
 
     return (
         <View style={styles.addBuddyContainer}>
             <Text style={styles.addBuddyText}>Add a Buddy:</Text>
-            <TextInput style={styles.BuddyInput} placeholder="  username" />
+            <TextInput 
+                style={[styles.buddyInput, {color: colors.blueText}]} 
+                placeholder="username" 
+                placeholderTextColor={colors.blueText}
+            />
             <TouchableOpacity style={styles.addButton}>
                 <Image source={addIcon} style={{width:30, height:30}}/>
             </TouchableOpacity>
@@ -32,7 +36,7 @@ const styles = StyleSheet.create({
         fontSize: 17, 
         marginRight: 5, 
     },
-    BuddyInput: { 
+    buddyInput: { 
         flex: 1, 
         borderBottomWidth: 1, 
         padding: 5, 
