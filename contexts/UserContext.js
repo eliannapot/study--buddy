@@ -1,0 +1,104 @@
+import { createContext, useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import colors from '../app/config/colors';
+import userService from '../services/userService';
+import { useAuth } from './AuthContext';
+
+const UsersContext = createContext();
+
+export const UsersProvider = ({ children }) => {
+    const { user } = useAuth();
+
+    const [users, setUsers] = useState([]);
+    const [currentUserDoc, setCurrentUserDoc] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (user?.$id) {
+            fetchAllUsers();
+            fetchCurrentUser();
+        }
+        setLoading(false);
+    }, [user]);
+
+    const fetchAllUsers = async () => {
+        setLoading(true);
+        const response = await userService.getAllUsers();
+        if (response.error) {
+            setError(response.error);
+            Alert.alert("Error fetching users", response.error);
+        } else {
+            setUsers(response.data);
+        }
+        setLoading(false);
+    };
+
+    const fetchCurrentUser = async () => {
+        const response = await userService.getUserByAuthId(user.$id);
+        if (response.error) {
+            setError(response.error);
+            console.warn("Could not fetch current user's document:", response.error);
+        } else {
+            setCurrentUserDoc(response.data);
+        }
+    };
+
+    const updateCurrentUser = async (updatedData) => {
+        if (!currentUserDoc?.$id) return;
+
+        const response = await userService.updateUser(currentUserDoc.$id, updatedData);
+        if (response.error) {
+            Alert.alert("Update Error", response.error);
+        } else {
+            setCurrentUserDoc(response.data);
+            setUsers(users.map(u => u.$id === response.data.$id ? response.data : u));
+        }
+    };
+
+    const deleteCurrentUser = async () => {
+        if (!currentUserDoc?.$id) return;
+
+        const response = await userService.deleteUser(currentUserDoc.$id);
+        if (response.error) {
+            Alert.alert("Delete Error", response.error);
+        } else {
+            setCurrentUserDoc(null);
+            setUsers(users.filter(u => u.$id !== currentUserDoc.$id));
+        }
+    };
+
+    return (
+        <UsersContext.Provider
+            value={{
+                users,
+                currentUserDoc,
+                updateCurrentUser,
+                deleteCurrentUser,
+                refetchUserDoc: fetchCurrentUser,
+            }}
+        >
+            {loading ? (
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color={colors.primary} />
+                </View>
+            ) : (
+                <>
+                    {error && <Text style={styles.errorText}>{error}</Text>}
+                    {children}
+                </>
+            )}
+        </UsersContext.Provider>
+    );
+};
+
+const styles = StyleSheet.create({
+    errorText: {
+        color: colors.red,
+        textAlign: 'center',
+        marginBottom: 10,
+        fontSize: 16,
+    },
+});
+
+export const useUsers = () => useContext(UsersContext);

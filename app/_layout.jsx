@@ -12,6 +12,7 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { CategoryProvider } from "../contexts/CategoryContext";
 import { EventsProvider } from "../contexts/EventContext";
 import { TasksProvider } from "../contexts/TaskContext";
+import { UsersProvider } from "../contexts/UserContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,6 +70,7 @@ const RootLayout = () => {
   <CategoryProvider>
   <TasksProvider>
   <EventsProvider>
+  <UsersProvider>
   <StatusBar backgroundColor = {colors.primary} />
   <Stack
     screenOptions={{
@@ -94,6 +96,7 @@ const RootLayout = () => {
     <Stack.Screen name="auth" options={{ headerShown: false }} />
 
   </Stack>
+  </UsersProvider>
   </EventsProvider>
   </TasksProvider>
   </CategoryProvider>

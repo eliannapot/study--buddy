@@ -1,6 +1,8 @@
 import { ID } from 'react-native-appwrite';
 import { account } from './appwrite';
 
+import userService from './userService';
+
 //The functions (ex create, get etc) are from the appwrite SDK
 
 const authService = {
@@ -8,7 +10,15 @@ const authService = {
     //Register a user
     async register(email, password, name) {
         try {
-            const response = await account.create(ID.unique(), email, password, name);
+            userId = ID.unique(); // Generate a unique user ID
+            console.log("Generated userId:", userId);
+            const response = await account.create(userId, email, password, name);
+
+            const userDocResult = await userService.addUser(userId, name);
+            if (userDocResult.error) {
+                console.warn("User was registered but not added to Users collection:", userDocResult.error);
+            }
+            
             return response;
         } catch (error) {
             return {
