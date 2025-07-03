@@ -1,8 +1,9 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
 import { useAuth } from "../../contexts/AuthContext";
+
 
 import ConfirmPasswordModal from '../../components/ConfirmPasswordModal';
 import colors from '../config/colors';
@@ -156,8 +157,10 @@ const SettingsScreen = () => {
                 {/* Logout Button */}
                 <TouchableOpacity 
                     style={styles.button}
-                    // onPress={()=> router.push("/auth")}
-                    onPress={logout}
+                    onPress={() => {
+                        router.push("auth");
+                        logout();
+                    }}
                 >
                     <Text style={styles.buttonText}>Log Out</Text>
                     <Ionicons name="log-out-outline" size={24} style={{ marginLeft: 10 }} />
