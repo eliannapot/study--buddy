@@ -4,11 +4,13 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // import { categories } from '../../data/categories';
 import { useCategories } from '../../contexts/CategoryContext.js';
+import { useUsers } from '../../contexts/UserContext.js';
+
 import colors from '../config/colors';
 
 
 import BuddyList from '../../components/BuddyList';
-import { buddies } from '../../data/buddies';
+// import { buddies } from '../../data/buddies';
 import { getOnlyFocusingBuddies } from '../../utils/timerUtils.js';
 
 import CategorySelector from '../../components/CategorySelector';
@@ -24,10 +26,13 @@ const TimerScreen = () => {
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
 
-
+    const { users, currentUserDoc } = useUsers();
+    
+    const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);
+    
     const router = useRouter();
         
-    const onlyFocusingBuddies = getOnlyFocusingBuddies(buddies);
+    const onlyFocusingBuddies = getOnlyFocusingBuddies(filteredUsers);
 
     useEffect(() => {
         let interval;

@@ -1,12 +1,16 @@
 import { ScrollView } from "react-native";
 
 import LeaderboardList from "../../components/LeaderboardList";
-import { buddies } from "../../data/buddies";
+// import { buddies } from "../../data/buddies";
+import { useUsers } from '../../contexts/UserContext';
+
 import { getSortedBuddiesByXP } from "../../utils/buddyUtils";
 
 const LeaderboardScreen = () => {
 
-    const allSortedBuddies = getSortedBuddiesByXP(buddies);
+    const { users } = useUsers();
+
+    const allSortedBuddies = getSortedBuddiesByXP(users);
 
     return (
         <ScrollView>

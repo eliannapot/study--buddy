@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import { buddies } from '../../data/buddies';
+// import { buddies } from '../../data/buddies';
+import { useUsers } from '../../contexts/UserContext';
 import { getTop10BuddiesByXP, getTopFocusingBuddies } from '../../utils/buddyUtils.js';
 
 import AddBuddyContainer from '../../components/AddBuddyContainer';
@@ -13,8 +14,15 @@ const BuddiesScreen = () => {
 
     const router = useRouter();
 
-    const focusingBuddies = getTopFocusingBuddies(buddies);
-    const top10Buddies = getTop10BuddiesByXP(buddies);
+    const { users, currentUserDoc } = useUsers();
+
+    const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);
+
+    const focusingBuddies = getTopFocusingBuddies(filteredUsers);
+    const top10Buddies = getTop10BuddiesByXP(users);
+
+    // const focusingBuddies = getTopFocusingBuddies(buddies);
+    // const top10Buddies = getTop10BuddiesByXP(buddies);
 
     return (
     <ScrollView contentContainerStyle={styles.container}>

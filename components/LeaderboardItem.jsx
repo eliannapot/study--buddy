@@ -1,4 +1,4 @@
-import {View, Text} from "react-native";
+import { Text, View } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
 import colors from "../app/config/colors";
@@ -13,15 +13,14 @@ const LeaderboardItem = ({item, index}) => {
                 <Icon 
                     name="radio-button-on" 
                     size={20} 
-                    color={ item.isFocusing ? (colors.primary) : (colors.black)} 
+                    color={ item.isFocusing ? colors.primary : colors.black } 
                 />
                 <Text style={styles.name}>{item.name}</Text>
             </View>
             <View style={styles.xpContainer}>
-                <Text style={styles.xp}>{item.xp} XP</Text>
+                <Text style={styles.xp}>{item.xp == null ? 0 : item.xp} XP</Text>
             </View>
         </View>
-
     );
 };
 
