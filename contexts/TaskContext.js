@@ -29,7 +29,7 @@ export const TasksProvider = ({ children }) => {
 
     const fetchTasks = async () => {
         setLoading(true);
-        const response = await taskService.getTasks(user.$id);
+        const response = await taskService.getTasks(user.$id, user.name);
         // console.log("Tasks fetched:", response);
         if (response.error) {
             setError(response.error);

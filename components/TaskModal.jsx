@@ -1,9 +1,11 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Modal from "react-native-modal";
 
-import { Picker } from "@react-native-picker/picker";
+import { useUsers } from "../contexts/UserContext.js";
+
 import colors from "../app/config/colors";
 import candy from "../assets/images/candy.png";
 
@@ -11,6 +13,8 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
     
     if (!task) 
         return null; 
+
+    const { currentUserDoc } = useUsers();
 
     const [taskStatus, setTaskStatus] = useState(task.status || "Not Started"); // Default to "Not Started" if status is not set
     const handleStatusChange = (value) => {
@@ -66,7 +70,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
         <View style={ styles.modalContent }>
             <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent:"space-between",  marginBottom: 10 }}>
                 <View style={{ flex: 1, marginRight: 10 }}>
-                    <Text style={styles.taskTitle}>{task.title}</Text>
+                    <Text style={styles.taskTitle}>{task.title || "Untitled Task"}</Text>
                 </View>
                 <View>
                     <View style={styles.categoryView}> 
@@ -108,13 +112,18 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
             )}
 
             
-            {task.studyBuddy && (
-            <View style={styles.groupRow}>
-                <Ionicons name="people" size={25} style={{ marginRight: 10 }} />
-                <Text style={styles.groupTitle}>StudyBuddy:</Text>
-                <Text style={styles.groupDetails}>{task.studyBuddy}</Text>
-            </View>
-            )}
+            {task.studyBuddy && currentUserDoc && (() => {
+                const otherBuddies = task.studyBuddy.filter(name => name !== currentUserDoc.name);
+                if (otherBuddies.length === 0) return null;
+                return (
+                    <View style={styles.groupRow}>
+                        <Ionicons name="people" size={25} style={{ marginRight: 10 }} />
+                        <Text style={styles.groupTitle}>StudyBuddy:</Text>
+                        <Text style={styles.groupDetails}>{otherBuddies.join(', ')}</Text>
+                    </View>
+                );
+            })()
+            }
 
             <View style={styles.groupRow}>
                 <Feather name="loader" size={25} style={{ marginRight: 10 }} />

@@ -15,16 +15,18 @@ const cleanAppwriteData = (data) => {
 const eventService = {
 
     // Get Events
-    async getEvents(userId) {
-        if (!userId) {
-            console.error("No user ID provided in getEvents");
-            return { data: [], error: "No user ID provided" };
+    async getEvents(userId, userName) {
+        if (!userId || !userName) {
+            console.error("Missing user ID or name in getEvents");
+            return { data: [], error: "Missing user ID or name" };
         }
         try {
             const response = await databaseService.listDocuments(dbId, colId, [
-                Query.equal('user_id', userId),
-            ]);
-            console.log("Events fetched:", response);
+                Query.or([
+                    Query.equal('user_id', userId),
+                    Query.contains('studyBuddy', userName),
+            ])]);
+            // console.log("Events fetched:", response);
             return response;
         } catch (error) {
             console.log("Error fetching events:", error);

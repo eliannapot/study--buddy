@@ -2,12 +2,16 @@ import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 
+import { useUsers } from "../contexts/UserContext.js";
+
 import colors from "../app/config/colors";
 import candy from "../assets/images/candy.png";
 
 const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
     if (!event) 
         return null; 
+
+    const { currentUserDoc } = useUsers();
 
     const formatReminderDateTime = (dateString) => {
         const date = new Date(dateString);
@@ -61,7 +65,7 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
         <View style={ styles.modalContent }>
             <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent:"space-between",  marginBottom: 10 }}>
                 <View style={{ flex: 1, marginRight: 10 }}>
-                    <Text style={styles.eventTitle}>{event.title}</Text>
+                    <Text style={styles.eventTitle}>{event.title || "Untitled Event"}</Text>
                 </View>
                 <View>
                     <View style={styles.categoryView}> 
@@ -118,13 +122,20 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
                 </View>
             )}
 
-            {event.studyBuddy && (
-            <View style={styles.groupRow}>
-                <Ionicons name="people" size={25} style={{ marginRight: 10 }} />
-                <Text style={styles.groupTitle}>StudyBuddy:</Text>
-                <Text style={styles.groupDetails}>{event.studyBuddy}</Text>
-            </View>
-            )}
+
+            {event.studyBuddy && currentUserDoc && (() => {
+                const otherBuddies = event.studyBuddy.filter(name => name !== currentUserDoc.name);
+                if (otherBuddies.length === 0) return null;
+                return (
+                    <View style={styles.groupRow}>
+                    <Ionicons name="people" size={25} style={{ marginRight: 10 }} />
+                    <Text style={styles.groupTitle}>StudyBuddy:</Text>
+                    <Text style={styles.groupDetails}>{otherBuddies.join(', ')}</Text>
+                    </View>
+                );
+                })()
+            }
+
 
             
         </View>

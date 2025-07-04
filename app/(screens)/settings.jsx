@@ -15,8 +15,8 @@ const SettingsScreen = () => {
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
     // const [username, setUsername] = useState('emily876');
-    const [email, setEmail] = useState(user.email || '');
-    const [name, setName] = useState(user.name || '');
+    const [email, setEmail] = useState(user?.email || '');
+    const [name, setName] = useState(user?.name || '');
     const [password, setPassword] = useState('');
 
     const [showModal, setShowModal] = useState(false);
@@ -157,9 +157,9 @@ const SettingsScreen = () => {
                 {/* Logout Button */}
                 <TouchableOpacity 
                     style={styles.button}
-                    onPress={() => {
-                        router.push("auth");
-                        logout();
+                    onPress={async () => {
+                        await logout();
+                        router.push("auth"); 
                     }}
                 >
                     <Text style={styles.buttonText}>Log Out</Text>

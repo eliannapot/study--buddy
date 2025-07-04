@@ -27,8 +27,8 @@ export const EventsProvider = ({ children }) => {
 
     const fetchEvents = async () => {
         setLoading(true);
-        const response = await eventService.getEvents(user.$id);
-        // console.log("Events fetched:", response);
+        // console.log("USER HERE HDFHAJSDFJKAHDS:", user);
+        const response = await eventService.getEvents(user.$id, user.name);
         if (response.error) {
             setError(response.error);
             Alert.alert("Error", response.error);

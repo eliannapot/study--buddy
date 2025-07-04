@@ -6,10 +6,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { useCategories } from '../../contexts/CategoryContext.js';
 import { useTasks } from '../../contexts/TaskContext';
+import { useUsers } from '../../contexts/UserContext.js';
 
 import { combineDateAndTime, getReminderDate, isValidDate, splitDateAndTime } from '../../utils/datetimeUtils';
-
-import { buddies } from '../../data/buddies';
 
 import candies from '../../assets/images/candies.png';
 import colors from '../config/colors';
@@ -41,7 +40,14 @@ const TaskFormScreen = () => {
 
     const [repeats, setRepeats] = useState(editingTask?.repetition || 'Never');
     const [reminder, setReminder] = useState(editingTask?.reminder ? 'Custom' : 'Never');
-    const [studyBuddy, setStudyBuddy] = useState(editingTask?.studyBuddy || null);
+
+    const { users, currentUserDoc } = useUsers();   
+    const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);     
+    const [studyBuddy, setStudyBuddy] = useState(() => {
+        const [buddy] = editingTask?.studyBuddy?.filter(name => name !== currentUserDoc?.name) || [];
+        return buddy || null;
+    });
+
     const [experiencePoints, setExperiencePoints] = useState(editingTask?.xp || 1);
 
     const safeDueDate = isValidDate(dueDate) ? dueDate : new Date();
@@ -49,6 +55,10 @@ const TaskFormScreen = () => {
     const combinedDueDate = combineDateAndTime(safeDueDate, safeDueTime);
 
     const handleSave = () => {
+        const studyBuddyArray = [currentUserDoc.name];
+        if (studyBuddy && studyBuddy !== currentUserDoc.name) {
+            studyBuddyArray.push(studyBuddy);
+        }
         const taskData = {
             ...editingTask,
             title: taskTitle,
@@ -56,7 +66,7 @@ const TaskFormScreen = () => {
             dueDate: combinedDueDate,
             xp: experiencePoints,
             status: editingTask?.status || "Not Started",
-            studyBuddy: studyBuddy,
+            studyBuddy: studyBuddyArray,
             details: taskDetails,
             reminder: reminder !== "Never" ? getReminderDate(reminder, combinedDueDate) : null,
             repetition: repeats !== "Never" ? repeats : null,
@@ -123,7 +133,7 @@ const TaskFormScreen = () => {
                 />
 
                 <StudyBuddyPicker
-                    buddies={buddies}
+                    buddies={filteredUsers}
                     value={studyBuddy}
                     setValue={setStudyBuddy}
                 />

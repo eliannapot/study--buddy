@@ -15,15 +15,17 @@ const cleanAppwriteData = (data) => {
 const taskService = {
 
     //Get Tasks
-    async getTasks(userId) {
-        if (!userId) {
-            console.error("No user ID provided in getTasks");
-            return { data: [], error: "No user ID provided" };
+    async getTasks(userId, userName) {
+        if (!userId || !userName) {
+            console.error("No user ID or name provided in getTasks");
+            return { data: [], error: "No user ID or name provided" };
         }
         try {
             const response = await databaseService.listDocuments(dbId, colId, [
-                Query.equal('user_id', userId),
-            ]);
+                Query.or([
+                    Query.equal('user_id', userId),
+                    Query.contains('studyBuddy', userName),
+            ])]);
             return response;
         } catch (error) {
             console.log("Error fetching tasks:", error);

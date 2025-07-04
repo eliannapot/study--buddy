@@ -8,10 +8,9 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 import { useCategories } from "../../contexts/CategoryContext.js";
 import { useEvents } from "../../contexts/EventContext";
+import { useUsers } from "../../contexts/UserContext.js";
 
 import { combineDateAndTime, getReminderDate, splitDateAndTime } from "../../utils/datetimeUtils";
-
-import { buddies } from "../../data/buddies";
 
 import candies from "../../assets/images/candies.png";
 import colors from "../config/colors";
@@ -38,7 +37,16 @@ const EventFormScreen = () => {
     const [facilitator, setFacilitator] = useState(editingEvent?.facilitator || "");
     const [repeats, setRepeats] = useState(editingEvent?.repetition || "Never");
     const [reminder, setReminder] = useState(editingEvent?.reminder ? "Custom" : "Never");
-    const [studyBuddy, setStudyBuddy] = useState(editingEvent?.studyBuddy || null);
+
+    const { users, currentUserDoc } = useUsers();   
+    const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);  
+    // const [studyBuddy, setStudyBuddy] = useState(editingEvent?.studyBuddy || null);
+    const [studyBuddy, setStudyBuddy] = useState(() => {
+        const [buddy] = editingEvent?.studyBuddy?.filter(name => name !== currentUserDoc?.name) || [];
+        return buddy || null;
+    });
+
+
     const [experiencePoints, setExperiencePoints] = useState(editingEvent?.xp || 1);
 
     const { dateOnly: startDate, timeOnly: startTime } = editingEvent?.date
@@ -58,6 +66,10 @@ const EventFormScreen = () => {
     const combinedEndDate = combineDateAndTime(endDate, endTime);
 
     const handleSave = () => {
+        const studyBuddyArray = [currentUserDoc.name];
+        if (studyBuddy && studyBuddy !== currentUserDoc.name) {
+            studyBuddyArray.push(studyBuddy);
+        }
         const eventData = {
             ...editingEvent,
             title: eventName,
@@ -68,7 +80,7 @@ const EventFormScreen = () => {
             facilitator,
             details: eventDetails,
             location,
-            studyBuddy,
+            studyBuddy: studyBuddyArray,
             reminder: reminder !== "Never" ? getReminderDate(reminder, combinedStartDate) : null,
             repetition: repeats !== "Never" ? repeats : null,
         };
@@ -166,7 +178,7 @@ const EventFormScreen = () => {
                 </View>
 
                 <StudyBuddyPicker
-                    buddies={buddies}
+                    buddies={filteredUsers}
                     value={studyBuddy}
                     setValue={setStudyBuddy}
                 />
