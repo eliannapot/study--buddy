@@ -16,7 +16,6 @@ const categoryService = {
             const response = await databaseService.listDocuments(dbId, colId, [
                 Query.equal('user_id', userId),
             ]);
-            console.log("Categories fetched:", response);
             return response; 
         } catch (error) {
             console.log("Error fetching categories:", error);
