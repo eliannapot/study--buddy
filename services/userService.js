@@ -148,6 +148,19 @@ const userService = {
         }
     },
 
+    // Flexible update
+    async updateUser(docId, updatedData) {
+        if (!docId || !updatedData) {
+            return { error: "docId and updatedData are required" };
+        }
+
+        const response = await databaseService.updateDocument(dbId, colId, docId, updatedData);
+        if (response?.error) {
+            return { error: response.error };
+        }
+        return { data: response };
+    },
+
     // Delete user document
     async deleteUser(docId) {
         const response = await databaseService.deleteDocument(dbId, colId, docId);

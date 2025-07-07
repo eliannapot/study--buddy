@@ -2,14 +2,16 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useAuth } from "../../contexts/AuthContext";
 
+import { useAuth } from "../../contexts/AuthContext";
+import { useUsers } from '../../contexts/UserContext';
 
 import ConfirmPasswordModal from '../../components/ConfirmPasswordModal';
 import colors from '../config/colors';
 
 const SettingsScreen = () => {
     const { user, logout, verifyPassword, updateUser } = useAuth();
+    const { updateCurrentUser, currentUserDoc } = useUsers();
 
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -20,25 +22,26 @@ const SettingsScreen = () => {
     const [password, setPassword] = useState('');
 
     const [showModal, setShowModal] = useState(false);
-    const [currentPasswordInput, setCurrentPasswordInput] = useState('');
 
 
-    const handleUpdate = async () => {
+    const handleUpdate = async (inputPassword) => {
         setShowModal(false);
-        const valid = await verifyPassword(currentPasswordInput);
-        if (!valid) {
-            Alert.alert("Error", "Incorrect password.");
-            return;
-        }
-        console.log("Updating user with:", { email, name, password, currentPasswordInput });
-        const result = await updateUser({ email, name, password, oldPassword: currentPasswordInput });
-        console.log("Update result:", result);
-        if (result.success) {
-            Alert.alert("Success", "Profile updated successfully.");
+        const valid = await verifyPassword(inputPassword);
+        if (valid === true) {
+            // proceed
+            const result = await updateUser({ email, name, password, oldPassword: inputPassword });
+            if (result.success) {
+                await updateCurrentUser({ name });
+                Alert.alert("Success", "Profile updated successfully.");
+            } else {
+                Alert.alert("Update Failed", result.error || "Something went wrong.");
+            }
+            setCurrentPasswordInput('');
+        } else if (valid === false) {
+            Alert.alert("Incorrect password");
         } else {
-            Alert.alert("Update Failed", result.error || "Something went wrong.");
+            Alert.alert("Error", "Something went wrong");
         }
-        setCurrentPasswordInput('');
     };
 
 
@@ -176,12 +179,12 @@ const SettingsScreen = () => {
                 </TouchableOpacity>
             </View>
 
+            {/* Confirm Password Modal */}
             <ConfirmPasswordModal
                 visible={showModal}
                 onClose={() => setShowModal(false)}
                 onConfirm={(password) => {
-                    setCurrentPasswordInput(password);
-                    handleUpdate(); // or your custom handler
+                    handleUpdate(password); // or your custom handler
                 }}
             />
 

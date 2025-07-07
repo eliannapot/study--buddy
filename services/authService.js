@@ -1,7 +1,9 @@
 import { ID } from 'react-native-appwrite';
 import { account } from './appwrite';
 
+import { verifyPasswordWithoutAffectingSession } from './appwriteTempClient'; // Adjust path as needed
 import userService from './userService';
+
 
 //The functions (ex create, get etc) are from the appwrite SDK
 
@@ -61,14 +63,9 @@ const authService = {
 
     //Verify user password
     async verifyPassword(email, password) {
-        try {
-            const session = await account.createEmailPasswordSession(email, password);
-            await account.deleteSession(session.$id); 
-            return true;
-        } catch (error) {
-            return false;
-        }
+        return await verifyPasswordWithoutAffectingSession(email, password);
     },
+
 
     //Update user information
     async updateUser({ email, name, password, oldPassword }) {

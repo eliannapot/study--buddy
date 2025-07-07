@@ -49,11 +49,25 @@ export const AuthProvider = ({ children }) => {
     };
 
     const verifyPassword = async (password) => {
-        console.log("(Context) Verifying password for user:", user.email);
-        const response = await authService.verifyPassword(user.email, password);
-        console.log("(Context) Password verification response:", response);
-        return !response?.error;
+        try {
+            const response = await authService.verifyPassword(user.email, password);
+            if (response.success === false || response?.error) {
+                if (response.success===false || response.error === "Invalid credentials" || response.code === 401) {
+                    return false; // Password is incorrect
+                } else if (response.status === 429) {
+                    return { success: false, error: "Too many attempts. Please wait a moment and try again." };
+                } else {
+                    return "error"; // Unexpected error
+                }
+            }
+
+            return true; // Password is correct
+        } catch (err) {
+            console.error("Unexpected error during password verification:", err);
+            return "error";
+        }
     };
+
 
     const updateUser = async (updates) => {
         const response = await authService.updateUser(updates); // { email, name, password }
