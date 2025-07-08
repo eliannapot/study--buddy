@@ -1,7 +1,9 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 
+import { useEvents } from "../contexts/EventContext.js";
 import { useUsers } from "../contexts/UserContext.js";
 
 import colors from "../app/config/colors";
@@ -11,7 +13,65 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
     if (!event) 
         return null; 
 
-    const { currentUserDoc } = useUsers();
+    const { currentUserDoc, updateCurrentUser, updateUserById, users } = useUsers();
+    const { editEvent } = useEvents();
+
+    const [isPast, setIsPast] = useState(false);
+    const [attending, setAttending] = useState(event?.attended === true);
+    
+    useEffect(() => {
+        if (event?.end_date) {
+            const now = new Date();
+            const endDate = new Date(event.end_date);
+            setIsPast(now > endDate);
+            setAttending(event.attended === true);
+        }
+    }, [event]);
+
+    useEffect(() => {
+        if (event) {
+            setAttending(event.attended === true);
+        }
+    }, [event]);
+
+
+    const handleToggleAttendance = async () => {
+        const newStatus = !attending; // toggle true ↔ false
+
+        try {
+            await editEvent(event.$id, { attended: newStatus });
+            setAttending(newStatus);
+
+            if (newStatus === true) {
+                // Marking as attended → log XP
+                const newLogEntry = `${event.endDate}-${event.xp}-${event.$id}`;
+
+                const xpLog = currentUserDoc?.xpLog || [];
+                const alreadyLogged = xpLog.some(entry => entry.includes(`-${event.$id}`));
+
+                if (!alreadyLogged) {
+                    await updateCurrentUser({ 
+                        xpLog: [...xpLog, newLogEntry]
+                    });
+                }
+            } else {
+                // Marking as not attended → remove XP log if exists
+                const filteredXpLog = (currentUserDoc?.xpLog || []).filter(
+                    entry => !entry.includes(`-${event.$id}`)
+                );
+
+                await updateCurrentUser({
+                    xpLog: filteredXpLog
+                });
+            }
+
+        } catch (error) {
+            Alert.alert("Error", "Could not update attendance.");
+            console.error("Attendance toggle error:", error);
+        }
+    };
+
+
 
     const formatReminderDateTime = (dateString) => {
         const date = new Date(dateString);
@@ -139,6 +199,64 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
 
             
         </View>
+
+        {isPast && (
+            <View style={{ marginTop: 20, alignItems: "center" }}>
+                {attending ? (
+                    <View
+                        style={{
+                            backgroundColor: colors.white,
+                            padding: 12,
+                            borderRadius: 10,
+                            width: "90%",
+                            alignItems: "center",
+                            borderColor: colors.primary,
+                            borderWidth: 0.5,
+                        }}
+                    >
+                        <Text style={{ color: colors.primary, fontFamily: "InterSemiBold", fontSize: 16 }}>
+                            Attended
+                        </Text>
+                    </View>
+                ) : (
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: colors.primary,
+                            padding: 12,
+                            borderRadius: 10,
+                            width: "90%",
+                            alignItems: "center",
+                            borderColor: colors.white,  
+                            borderWidth: 0.5,
+                        }}
+                    >
+                        <Text style={{ color: "white", fontFamily: "InterSemiBold", fontSize: 16 }}>
+                            Not Attended
+                        </Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+        )}
+        <View style={{ marginTop: 5, alignItems: 'center' }}>
+            {new Date(event.end_date) < new Date() && (
+                <TouchableOpacity
+                    style={{
+                        backgroundColor: colors.gray,
+                        paddingVertical: 10,
+                        paddingHorizontal: 20,
+                        borderRadius: 10,
+                        borderColor: colors.secondary,
+                        borderWidth: 0.5,
+                    }}
+                    onPress={handleToggleAttendance}
+                >
+                    <Text style={{ color: 'white', fontFamily: 'InterSemiBold' }}>
+                        {attending ? "Mark as Not Attended" : "Mark as Attended"}
+                    </Text>
+                </TouchableOpacity>
+            )}
+        </View>
+
     </Modal>
   );
 };
