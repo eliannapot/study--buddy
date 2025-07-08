@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+
 import colors from '../app/config/colors';
 import userService from '../services/userService';
 import { useAuth } from './AuthContext';
@@ -11,19 +12,34 @@ export const UsersProvider = ({ children }) => {
 
     const [users, setUsers] = useState([]);
     const [currentUserDoc, setCurrentUserDoc] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const [polling, setPolling] = useState(false);
+
     useEffect(() => {
-        if (user?.$id) {
-            fetchAllUsers();
-            fetchCurrentUser();
+        if (!user?.$id) return;
+
+        const loadInitial = async () => {
+            await fetchAllUsers();
+            await fetchCurrentUser();
+            setInitialLoading(false);
         }
-        setLoading(false);
+        loadInitial();
+
+        //Polling every 10 seconds
+        const interval = setInterval( async () => {
+            setPolling(true);
+            await fetchAllUsers();
+            await fetchCurrentUser();
+            setPolling(false);
+        }, 10000); 
+        
+        //Cleanup on unmount
+        return () => clearInterval(interval);
     }, [user]);
 
     const fetchAllUsers = async () => {
-        setLoading(true);
         const response = await userService.getAllUsers();
         if (response.error) {
             setError(response.error);
@@ -31,7 +47,6 @@ export const UsersProvider = ({ children }) => {
         } else {
             setUsers(response.data);
         }
-        setLoading(false);
     };
 
     const fetchCurrentUser = async () => {
@@ -78,7 +93,7 @@ export const UsersProvider = ({ children }) => {
                 refetchUserDoc: fetchCurrentUser,
             }}
         >
-            {loading ? (
+            {initialLoading ? (
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color={colors.primary} />
                 </View>

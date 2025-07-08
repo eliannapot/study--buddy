@@ -26,7 +26,7 @@ const TimerScreen = () => {
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
 
-    const { users, currentUserDoc } = useUsers();
+    const { users, currentUserDoc, updateCurrentUser } = useUsers();
     
     const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);
     
@@ -81,14 +81,25 @@ const TimerScreen = () => {
             <View style={styles.buttonsContainer}>
                 {/* <Button title={isRunning ? 'Stop' : 'Start'} onPress={() => setIsRunning(!isRunning)} /> */}
                 
-                <TouchableOpacity onPress={() => setIsRunning(true)}>
+                <TouchableOpacity onPress={() => {
+                        if (!selectedCategory) {
+                            alert("Select a category to start focusing.");
+                            return;
+                        }
+                        setIsRunning(true);
+                        updateCurrentUser({isFocusing: selectedCategory.name,})
+                    }}>
                 {isRunning ? (
                     <Image source={playIcon} style={styles.smallIcon}/>
                     ) : (
                     <Image source={playIcon} style={styles.bigIcon}/>
                     )}
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { setSeconds(0); setIsRunning(false); }}>
+                <TouchableOpacity onPress={() => {
+                        setSeconds(0); 
+                        setIsRunning(false); 
+                        updateCurrentUser({isFocusing: null,})
+                    }}>
                     {isRunning ? (
                     <Image source={stopIcon} style={styles.bigIcon}/>
                     ) : (

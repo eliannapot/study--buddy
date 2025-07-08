@@ -77,34 +77,6 @@ const userService = {
         return { data: response };
     },
 
-    // Set isFocusing to a string
-    async startFocus(docId, label = "Focusing") {
-        if (!docId) {
-            return { error: "docId is required" };
-        }
-        const response = await databaseService.updateDocument(dbId, colId, docId, {
-            isFocusing: label,
-        });
-        if (response?.error) {
-            return { error: response.error };
-        }
-        return { data: response };
-    },
-
-    // Set isFocusing to null
-    async stopFocus(docId) {
-        if (!docId) {
-            return { error: "docId is required" };
-        }
-        const response = await databaseService.updateDocument(dbId, colId, docId, {
-            isFocusing: null,
-        });
-        if (response?.error) {
-            return { error: response.error };
-        }
-        return { data: response };
-    },
-
     // Update streak (e.g., daily at midnight)
     async updateStreak(docId, newStreakValue) {
         if (!docId || typeof newStreakValue !== "number") {

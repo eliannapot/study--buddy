@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -14,7 +14,7 @@ const BuddyItem = ({ buddy }) => {
             <Text style={styles.buddyName}>{buddy.name}</Text>
             
             { buddy.isFocusing ? (
-                <Text style={styles.buddyStatus}>Focusing...</Text>
+                <Text style={styles.buddyStatus}>Focusing on #{buddy.isFocusing}</Text>
             ) : (   
                 null
             ) }
