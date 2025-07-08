@@ -72,7 +72,6 @@ const TaskItem = ({ task }) => {
                     <TouchableOpacity 
                         hitSlop={{ top: 40, bottom: 10, left: 40, right: 10 }}
                         onPress={() => {
-                            console.log("Opening task:", task);
                             openTask(task)}}
                     > 
                         <Text style={styles.showTaskDetails}>...</Text>

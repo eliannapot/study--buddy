@@ -14,16 +14,42 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
     if (!task) 
         return null; 
 
-    const { currentUserDoc } = useUsers();
+    const { currentUserDoc, updateCurrentUser, users, updateUserById } = useUsers();
 
     const [taskStatus, setTaskStatus] = useState(task.status || "Not Started"); // Default to "Not Started" if status is not set
-    const handleStatusChange = (value) => {
-    if (value !== task.status) {
-        onStatusChange(task.$id, { status: value });
-        setTaskStatus(value); // Update the local state with the new status
-        Alert.alert("Task Updated", `Status changed to "${value}"`);
-    }
-};
+    
+    const handleStatusChange = async (value) => {
+        if (value !== task.status) {
+            onStatusChange(task.$id, { status: value });
+            setTaskStatus(value); // Update the local state with the new status
+            Alert.alert("Task Updated", `Status changed to "${value}"`);
+
+            if (value === "Done" && Array.isArray(task.studyBuddy) && task.studyBuddy.length > 0) {
+                const xpPoints = task.xp || 1;
+                const now = new Date().toISOString();
+                const taskId = task.$id;
+                const newLogEntry = `${now}-${xpPoints}-${taskId}`;
+
+                // Loop through each buddy
+                for (const buddy of users) {
+                    if (!task.studyBuddy.includes(buddy.name)) continue;
+
+                    const xpLog = buddy.xpLog || [];
+                    const alreadyLogged = xpLog.some(entry => entry.includes(`-${taskId}`));
+
+                    if (!alreadyLogged) {
+                        const updatedXpLog = [...xpLog, newLogEntry];
+
+                        if (buddy.$id === currentUserDoc?.$id) {
+                            await updateCurrentUser({ xpLog: updatedXpLog });
+                        } else {
+                            updateUserById(buddy.$id, { xpLog: updatedXpLog });
+                        }
+                    }
+                }   
+            }
+        }
+    };
 
 
     //Customising the picker item style based on the color scheme of the device

@@ -60,6 +60,7 @@ export const UsersProvider = ({ children }) => {
     };
 
     const updateCurrentUser = async (updatedData) => {
+        console.log("Updating current user with data:", updatedData);
         if (!currentUserDoc?.$id) return;
 
         const response = await userService.updateUser(currentUserDoc.$id, updatedData);
@@ -70,6 +71,18 @@ export const UsersProvider = ({ children }) => {
             setUsers(users.map(u => u.$id === response.data.$id ? response.data : u));
         }
     };
+
+    const updateUserById = async (userId, updatedData) => {
+        const response = await userService.updateUser(userId, updatedData);
+        if (response.error) {
+            Alert.alert("Update Error", response.error);
+        } else {
+            setUsers(prev => prev.map(u => u.$id === userId ? response.data : u));
+        }
+        return response;
+    };
+
+
 
     const deleteCurrentUser = async () => {
         if (!currentUserDoc?.$id) return;
@@ -91,6 +104,7 @@ export const UsersProvider = ({ children }) => {
                 updateCurrentUser,
                 deleteCurrentUser,
                 refetchUserDoc: fetchCurrentUser,
+                updateUserById,
             }}
         >
             {initialLoading ? (
