@@ -10,7 +10,7 @@ import { useTasks } from "../../contexts/TaskContext";
 import eventsIcon from "../../assets/images/goToEvents.png";
 import plusIcon from "../../assets/images/plus.png";
 import TaskItem from "../../components/TaskItem";
-import colors from "../config/colors";
+import colors, { adjustableColors } from "../config/colors";
 
 const AllTasksScreen = () => {
 
@@ -82,7 +82,11 @@ const AllTasksScreen = () => {
                         Sort by:
                     </Text>
                     <View style={styles.pickerContainer}>
-                    <Picker selectedValue={sortBy} onValueChange={(value) => setSortBy(value)} dropdownIconColor={colors.primary}>
+                    <Picker 
+                        selectedValue={sortBy} 
+                        onValueChange={(value) => setSortBy(value)} 
+                        dropdownIconColor={adjustableColors.adjustableArrowColor}
+                    >
                         <Picker.Item label="Due date" value="Due date" style={styles.pickerText}/>
                         <Picker.Item label="Category" value="Category" style={styles.pickerText}/>
                         <Picker.Item label="XP" value="XP" style={styles.pickerText}/>
@@ -123,22 +127,23 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         padding: 10,
         alignItems: "center",
-        },
+    },
     sortByText: {
         fontFamily: "LailaSemiBold",
         fontSize: 25,
     }, 
     pickerContainer :{
         flex: 1,
-        backgroundColor: colors.hexToRGBA(colors.tertiary, 0.1),
         borderRadius: 10,
         borderWidth: 1,
         marginLeft: 10,
+        borderWidth: 0.5,
+        borderColor: colors.primary,
+        backgroundColor: adjustableColors.adjustableBackgroundColor,
     },
     pickerText: {
         fontFamily: "InterMedium",
-        fontSize: 21,
-        color: colors.blueText
+        fontSize: 19,
     },
     listContainer: {
         paddingBottom: 80,
