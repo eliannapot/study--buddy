@@ -6,18 +6,25 @@ import StreakIndicator from '../../components/StreakIndicator';
 import TasksContainer from '../../components/TasksContainer';
 import XPindicator from '../../components/XPIndicator';
 
+import { getXPStats, parseXPLog } from '../../utils/statisticsUtils';
+
 import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEvents } from '../../contexts/EventContext';
 import { useTasks } from '../../contexts/TaskContext';
+import { useUsers } from '../../contexts/UserContext';
 
 const DashboardScreen = () => {
     
     const router = useRouter();
     const { user, loading } = useAuth();
 
+    const { currentUserDoc } = useUsers();
     const { tasks } = useTasks();
     const { events } = useEvents();
+
+    const parsedXPLog = parseXPLog(currentUserDoc?.xpLog ?? []);
+    const xpStats = getXPStats(parsedXPLog);
 
     const getUpcomingItems = (items, dateKey, number) => {
         return items
@@ -61,8 +68,8 @@ const DashboardScreen = () => {
                         <Text style={styles.welcomeText}>Hi {user.name}!</Text>
                         <Text style={styles.welcomeText}>Ready to start the day?</Text>
                     </View>
-                    <XPindicator userXP={200} candySize={50} />
-                    <StreakIndicator userStreak={5} />
+                    <XPindicator userXP={xpStats.total} candySize={50} />
+                    <StreakIndicator userStreak={currentUserDoc.streak} />
                 </View>
             }
         />

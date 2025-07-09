@@ -1,7 +1,6 @@
-import { LineChart } from "react-native-chart-kit";
-import { View, Text, StyleSheet } from "react-native";
-import { Dimensions } from "react-native";
 import moment from "moment";
+import { Dimensions, StyleSheet } from "react-native";
+import { LineChart } from "react-native-chart-kit";
 
 import colors from "../app/config/colors";
 

@@ -1,54 +1,59 @@
+import { Picker } from '@react-native-picker/picker';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Icon from "react-native-vector-icons/Ionicons";
 
+import colors, { adjustableColors } from '../../app/config/colors';
+
+import StatisticsChart from '../../components/StatisticsChart';
 import StreakIndicator from '../../components/StreakIndicator';
 import XPindicator from '../../components/XPIndicator';
 
-import { getXPStats } from '../../utils/statisticsUtils';
+import { getXPStats, parseXPLog } from '../../utils/statisticsUtils';
 
-import { Picker } from '@react-native-picker/picker';
-import Icon from "react-native-vector-icons/Ionicons";
-import colors, { adjustableColors } from '../../app/config/colors';
-import StatisticsChart from '../../components/StatisticsChart';
+import { useUsers } from '../../contexts/UserContext';
+
 
 const ProfileScreen = () => {
     
-    const xpLog = [
-        { xp: 3, timestamp: '2025-04-10T08:30:00Z' },
-        { xp: 2, timestamp: '2025-04-09T14:12:00Z' },
-        { xp: 5, timestamp: '2025-04-04T17:00:00Z' },
-        { xp: 1, timestamp: '2025-04-03T09:45:00Z' },
-        { xp: 4, timestamp: '2025-04-01T11:15:00Z' },
-        { xp: 2, timestamp: '2025-03-28T13:30:00Z' },
-        { xp: 3, timestamp: '2025-03-27T16:00:00Z' },
-        { xp: 1, timestamp: '2025-03-25T10:00:00Z' },
-        { xp: 4, timestamp: '2025-03-24T12:45:00Z' },
-        { xp: 2, timestamp: '2025-03-20T15:30:00Z' },
-        { xp: 3, timestamp: '2025-03-19T18:00:00Z' },
-        { xp: 1, timestamp: '2025-04-27T09:00:00Z' },
-        { xp: 4, timestamp: '2025-04-26T11:30:00Z' },
-        { xp: 2, timestamp: '2025-04-25T14:15:00Z' },
-        { xp: 3, timestamp: '2025-04-24T16:45:00Z' },
-        { xp: 1, timestamp: '2025-04-23T10:30:00Z' },
-        { xp: 4, timestamp: '2025-04-22T12:00:00Z' },
-        { xp: 2, timestamp: '2025-04-21T13:45:00Z' },
-        { xp: 3, timestamp: '2025-04-20T15:15:00Z' },
-        { xp: 1, timestamp: '2025-04-19T09:15:00Z' },
-        { xp: 4, timestamp: '2025-04-28T11:45:00Z' },
-        { xp: 2, timestamp: '2025-04-29T14:30:00Z' },
-    ];
+    // const xpLog = [
+    //     { xp: 3, timestamp: '2025-04-10T08:30:00Z' },
+    //     { xp: 2, timestamp: '2025-04-09T14:12:00Z' },
+    //     { xp: 5, timestamp: '2025-04-04T17:00:00Z' },
+    //     { xp: 1, timestamp: '2025-04-03T09:45:00Z' },
+    //     { xp: 4, timestamp: '2025-04-01T11:15:00Z' },
+    //     { xp: 2, timestamp: '2025-03-28T13:30:00Z' },
+    //     { xp: 3, timestamp: '2025-03-27T16:00:00Z' },
+    //     { xp: 1, timestamp: '2025-03-25T10:00:00Z' },
+    //     { xp: 4, timestamp: '2025-03-24T12:45:00Z' },
+    //     { xp: 2, timestamp: '2025-03-20T15:30:00Z' },
+    //     { xp: 3, timestamp: '2025-03-19T18:00:00Z' },
+    //     { xp: 1, timestamp: '2025-04-27T09:00:00Z' },
+    //     { xp: 4, timestamp: '2025-04-26T11:30:00Z' },
+    //     { xp: 2, timestamp: '2025-04-25T14:15:00Z' },
+    //     { xp: 3, timestamp: '2025-04-24T16:45:00Z' },
+    //     { xp: 1, timestamp: '2025-04-23T10:30:00Z' },
+    //     { xp: 4, timestamp: '2025-04-22T12:00:00Z' },
+    //     { xp: 2, timestamp: '2025-04-21T13:45:00Z' },
+    //     { xp: 3, timestamp: '2025-04-20T15:15:00Z' },
+    //     { xp: 1, timestamp: '2025-04-19T09:15:00Z' },
+    //     { xp: 4, timestamp: '2025-04-28T11:45:00Z' },
+    //     { xp: 2, timestamp: '2025-04-29T14:30:00Z' },
+    // ];
 
-    const user = { userName: "Emily", userTotalXP: 200, userStreak: 5 };
-    //const userXP = user.userTotalXP;
-    const userStreak = user.userStreak;
-    const userName = user.userName;
+    const { currentUserDoc } = useUsers();
+
+    const userName = currentUserDoc?.name ?? "Guest";
+    const userStreak = currentUserDoc?.streak ?? 0;
 
     const [dropdown, setDropdown] = useState("week");
 
-    const xpStats = getXPStats(xpLog);
+    const parsedXPLog = parseXPLog(currentUserDoc?.xpLog ?? []);
+    const xpStats = getXPStats(parsedXPLog);
     const todayXP = xpStats.today;
     const weekXP = xpStats.week;
     const totalXP = xpStats.total;
+
 
     return (
         <View style={styles.container}>
@@ -59,7 +64,7 @@ const ProfileScreen = () => {
                 <View>
                     <View style={styles.profileInfo}>
                         <XPindicator userXP={totalXP} candySize={70} />
-                        <StreakIndicator userStreak={5} flameSize={70}/>
+                        <StreakIndicator userStreak={userStreak} flameSize={70}/>
                     </View>
                     <Text style={styles.name}>
                         {userName}.
@@ -95,7 +100,7 @@ const ProfileScreen = () => {
                     <Picker.Item label="All time" value="alltime" />
                 </Picker>
                 </View>
-                <StatisticsChart mode={dropdown} xpLog={xpLog}/>
+                <StatisticsChart mode={dropdown} xpLog={parsedXPLog}/>
 
             </View>
         </View>
