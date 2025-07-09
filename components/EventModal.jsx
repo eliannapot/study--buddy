@@ -39,12 +39,13 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
         const newStatus = !attending; // toggle true ↔ false
 
         try {
+            console.log("Toggling attendance for event:", event.$id, "to", newStatus);
             await editEvent(event.$id, { attended: newStatus });
             setAttending(newStatus);
 
             if (newStatus === true) {
                 // Marking as attended → log XP
-                const newLogEntry = `${event.endDate}-${event.xp}-${event.$id}`;
+                const newLogEntry = `${event.end_date}-${event.xp}-${event.$id}`;
 
                 const xpLog = currentUserDoc?.xpLog || [];
                 const alreadyLogged = xpLog.some(entry => entry.includes(`-${event.$id}`));

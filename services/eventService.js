@@ -62,6 +62,15 @@ const eventService = {
             return {error: "No id or data provided"};
         }
         const cleanedData = cleanAppwriteData(data);
+        // Remove relationship fields that are not being updated
+        if (!('studyBuddy' in data)) {
+            delete cleanedData.studyBuddy;
+        }
+        if (!('categories' in data)) {
+            delete cleanedData.categories;
+        }
+        console.log("Updating event with ID:", id, "and data:", cleanedData);
+
         const response = await databaseService.updateDocument(dbId, colId, id, cleanedData);
         if (response?.error) {
             return {error: response.error};

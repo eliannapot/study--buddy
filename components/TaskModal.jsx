@@ -14,7 +14,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
     if (!task) 
         return null; 
 
-    const { currentUserDoc, updateCurrentUser, users, updateUserById } = useUsers();
+    const { currentUserDoc, updateCurrentUser, users, updateUserById, handleUserActivity } = useUsers();
 
     const [taskStatus, setTaskStatus] = useState(task.status || "Not Started"); // Default to "Not Started" if status is not set
     
@@ -42,8 +42,10 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
 
                         if (buddy.$id === currentUserDoc?.$id) {
                             await updateCurrentUser({ xpLog: updatedXpLog });
+                            await handleUserActivity(currentUserDoc.$id);
                         } else {
-                            updateUserById(buddy.$id, { xpLog: updatedXpLog });
+                            await updateUserById(buddy.$id, { xpLog: updatedXpLog });
+                            await handleUserActivity(buddy.$id);
                         }
                     }
                 }   

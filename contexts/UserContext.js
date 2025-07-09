@@ -82,8 +82,6 @@ export const UsersProvider = ({ children }) => {
         return response;
     };
 
-
-
     const deleteCurrentUser = async () => {
         if (!currentUserDoc?.$id) return;
 
@@ -96,6 +94,41 @@ export const UsersProvider = ({ children }) => {
         }
     };
 
+
+    const handleUserActivity = async (userId) => {
+        if (!userId) return;
+
+        console.log("Handling user activity for user:", userId.name);
+
+        const userDoc = users.find(u => u.$id === userId);
+        if (!userDoc) {
+            console.warn("User not found in context for streak update:", userId);
+            return;
+        }
+
+        const today = new Date().toISOString().split("T")[0];
+        const lastActiveDate = userDoc.lastActiveDate || null;
+
+        if (lastActiveDate !== today) {
+            const updatedStreak = (userDoc.streak || 0) + 1;
+            const updateData = {
+                streak: updatedStreak,
+                lastActiveDate: today,
+                hasMetDailyGoal: true,
+            };
+
+            await updateUserById(userDoc.$id, updateData);
+
+            if (userDoc.$id === currentUserDoc?.$id) {
+                setCurrentUserDoc(prev => ({
+                    ...prev,
+                    ...updateData,
+                }));
+            }
+        }
+    };
+
+
     return (
         <UsersContext.Provider
             value={{
@@ -105,6 +138,7 @@ export const UsersProvider = ({ children }) => {
                 deleteCurrentUser,
                 refetchUserDoc: fetchCurrentUser,
                 updateUserById,
+                handleUserActivity,
             }}
         >
             {initialLoading ? (
