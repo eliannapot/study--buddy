@@ -53,7 +53,8 @@ const CategorySelector = ({ selectedCategory, onCategorySelect }) => {
               >
                 <Text style={[
                   styles.categoryText,
-                  selectedCategory?.$id === item.$id && styles.selectedText
+                  selectedCategory?.$id === item.$id && styles.selectedText,
+                  item.$id === "none" && { fontStyle: 'italic', opacity: 0.6 }
                 ]}>
                   #{item.name}
                 </Text>

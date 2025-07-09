@@ -30,7 +30,11 @@ export const CategoryProvider = ({ children }) => {
             setError(response.error);
             Alert.alert("Error", response.error);
         } else {
-            setCategories(response.data);
+            const defaultNoneCategory = {
+                $id: "none",
+                name: "None",
+            };
+            setCategories([defaultNoneCategory, ...response.data]);
             setError(null);
         }
         setLoading(false);
