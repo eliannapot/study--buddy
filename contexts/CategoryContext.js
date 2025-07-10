@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 
 import colors from '../app/config/colors';
 
@@ -30,11 +30,7 @@ export const CategoryProvider = ({ children }) => {
             setError(response.error);
             Alert.alert("Error", response.error);
         } else {
-            const defaultNoneCategory = {
-                $id: "none",
-                name: "None",
-            };
-            setCategories([defaultNoneCategory, ...response.data]);
+            setCategories(response.data);
             setError(null);
         }
         setLoading(false);
@@ -69,5 +65,14 @@ export const CategoryProvider = ({ children }) => {
         </CategoryContext.Provider>
     );
 };
+
+const styles = StyleSheet.create({
+    errorText: {
+        color: 'red',
+        textAlign: 'center',
+        marginBottom: 10,
+        fontSize: 16,
+    },
+});
 
 export const useCategories = () => useContext(CategoryContext);

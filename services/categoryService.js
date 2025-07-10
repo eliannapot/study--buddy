@@ -13,15 +13,29 @@ const categoryService = {
             return { data: [], error: "No user ID provided" };
         }
         try {
-            const response = await databaseService.listDocuments(dbId, colId, [
-                Query.equal('user_id', userId),
+            const [userRes, noneRes] = await Promise.all([
+                databaseService.listDocuments(dbId, colId, [
+                    Query.equal('user_id', userId),
+                ]),
+                databaseService.listDocuments(dbId, colId, [
+                    Query.equal('$id', 'default-none'),
+                ]),
             ]);
-            return response; 
+            const userDocs = userRes?.data ?? [];
+            const noneDocs = noneRes?.data ?? [];
+
+            const allCategories = [...noneDocs, ...userDocs];
+
+            return {
+                data: allCategories,
+                error: null,
+            };
         } catch (error) {
             console.log("Error fetching categories:", error);
             return { data: [], error: error.message };
         }
     },
+
 
     // Create Category
     async addCategory(user_id, data) {
