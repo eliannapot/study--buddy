@@ -1,10 +1,21 @@
-import { Text, View } from "react-native";
+import { useRouter } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import Icon from "react-native-vector-icons/Ionicons";
 import colors from "../app/config/colors";
 
 const LeaderboardItem = ({item, index}) => {
+
+    const router = useRouter();
+
     return(
+        <TouchableOpacity onPress={() => router.push({
+            pathname: '/buddyProfile',
+            params: {
+                userDoc: JSON.stringify(item),
+            },
+
+        })}>
         <View style={styles.leaderboardItem}>
             <View style={styles.rankContainer}> 
                 <Text style={styles.rank}>{index + 1}</Text>
@@ -14,17 +25,18 @@ const LeaderboardItem = ({item, index}) => {
                     name="radio-button-on" 
                     size={20} 
                     color={ item.isFocusing ? colors.primary : colors.black } 
-                />
+                    />
                 <Text style={styles.name}>{item.name}</Text>
             </View>
             <View style={styles.xpContainer}>
                 <Text style={styles.xp}>{item.xp == null ? 0 : item.xp} XP</Text>
             </View>
         </View>
+        </TouchableOpacity>
     );
 };
 
-const styles = {
+const styles = StyleSheet.create({ 
     leaderboardItem: { 
         flexDirection: "row", 
         alignItems: "center", 
@@ -79,6 +91,6 @@ const styles = {
         fontfamily: "InterSemiBold", 
         fontSize: 18, 
     },
-};
+});
 
 export default LeaderboardItem;

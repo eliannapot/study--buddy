@@ -13,7 +13,7 @@ const BuddyList = ({topBuddies}) => {
                     <FlatList
                         data={topBuddies}
                         scrollEnabled={false}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.$id}
                         renderItem={({ item }) => (
                             <BuddyItem buddy={item}/>
                         )}

@@ -113,7 +113,13 @@ const ScreensLayout = () => {
       },
       headerTintColor: colors.white,
     }} />
-    
+
+    <Stack.Screen 
+      name="buddyProfile"         
+      options={{
+        title: "Buddy Profile"
+    }}/>
+
   </Stack>
   
   );

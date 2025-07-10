@@ -1,9 +1,9 @@
-import { Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { ImageBackground, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import colors from '../app/config/colors';
 import candy from '../assets/images/candy.png';
 
-const XPindicator = ({ userXP, candySize=50 }) => {
+const XPindicator = ({ userXP, candySize=50 , color=null}) => {
 
     const scale = candySize / 50; // 50 is the base size from your original design
 
@@ -12,6 +12,8 @@ const XPindicator = ({ userXP, candySize=50 }) => {
             padding: 5 * scale,
             borderWidth: 3 * scale,
             borderRadius: 5 * scale,
+            backgroundColor: color ? colors.hexToRGBA(color, 0.2) : colors.hexToRGBA(colors.tertiary, 0.2),
+            borderColor: color ? color : colors.tertiary,
         },
         candyIcon: {
             width: candySize,

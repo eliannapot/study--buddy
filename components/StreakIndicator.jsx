@@ -1,9 +1,9 @@
-import { Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { ImageBackground, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import colors from '../app/config/colors';
 import flame from '../assets/images/flame.png';
 
-const StreakIndicator = ({ userStreak, flameSize = 50 }) => {
+const StreakIndicator = ({ userStreak, flameSize = 50 , color=null}) => {
     const scale = flameSize / 50; // Base size from original design
 
     const dynamicStyles = {
@@ -11,17 +11,19 @@ const StreakIndicator = ({ userStreak, flameSize = 50 }) => {
             padding: 5 * scale,
             borderWidth: 3 * scale,
             borderRadius: 5 * scale,
+            backgroundColor: color ? colors.hexToRGBA(color, 0.2) : colors.hexToRGBA(colors.tertiary, 0.2),
+            borderColor: color ? color : colors.tertiary,
         },
         flameIcon: {
             width: flameSize,
             height: flameSize,
         },
         streakNumber: {
-            fontSize: 25 * scale,
+            fontSize: 23 * scale,
         },
         streakText: {
             fontSize: 10 * scale,
-            lineHeight: 11 * scale,
+            lineHeight: 9 * scale,
         },
     };
 
