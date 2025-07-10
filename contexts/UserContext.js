@@ -98,8 +98,6 @@ export const UsersProvider = ({ children }) => {
     const handleUserActivity = async (userId) => {
         if (!userId) return;
 
-        console.log("Handling user activity for user:", userId.name);
-
         const userDoc = users.find(u => u.$id === userId);
         if (!userDoc) {
             console.warn("User not found in context for streak update:", userId);

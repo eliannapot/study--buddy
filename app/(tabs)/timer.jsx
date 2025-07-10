@@ -1,16 +1,13 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// import { categories } from '../../data/categories';
 import { useCategories } from '../../contexts/CategoryContext.js';
 import { useUsers } from '../../contexts/UserContext.js';
 
 import colors from '../config/colors';
 
-
 import BuddyList from '../../components/BuddyList';
-// import { buddies } from '../../data/buddies';
 import { getOnlyFocusingBuddies } from '../../utils/timerUtils.js';
 
 import CategorySelector from '../../components/CategorySelector';
@@ -26,7 +23,7 @@ const TimerScreen = () => {
     const [seconds, setSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
 
-    const { users, currentUserDoc, updateCurrentUser } = useUsers();
+    const { users, currentUserDoc, updateCurrentUser, handleUserActivity } = useUsers();
     
     const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);
     
@@ -48,6 +45,31 @@ const TimerScreen = () => {
 
     const minutes = Math.floor(seconds / 60).toString().padStart(2, '0'); // Ensure 2 digits
     const displaySeconds = (seconds % 60).toString().padStart(2, '0');
+
+    const handleTimerStop = async () => {
+        setIsRunning(false);
+        //
+        console.log("Timer stopped. Total seconds:", seconds);
+        console.log("Current user document:", currentUserDoc);
+        //
+        const completedHalfHours = Math.floor(seconds / (30 * 60)); // 30 minutes
+
+        if (completedHalfHours > 0) {
+            const xpPoints = completedHalfHours;
+            const now = new Date().toISOString();
+            const timerId = currentUserDoc?.$id;
+            const newLogEntry = `${now}-${xpPoints}-${timerId}`;
+            const updatedXpLog = [...(currentUserDoc?.xpLog || []), newLogEntry];
+
+            await updateCurrentUser({ xpLog: updatedXpLog });
+            await handleUserActivity(currentUserDoc?.$id);
+
+            Alert.alert("Focus session complete!", `You earned ${xpPoints} XP 🎉`);
+        }
+
+        setSeconds(0);
+        await updateCurrentUser({ isFocusing: null });
+    };
 
     return (
         <View >
@@ -95,11 +117,7 @@ const TimerScreen = () => {
                     <Image source={playIcon} style={styles.bigIcon}/>
                     )}
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
-                        setSeconds(0); 
-                        setIsRunning(false); 
-                        updateCurrentUser({isFocusing: null,})
-                    }}>
+                <TouchableOpacity onPress={ handleTimerStop }>
                     {isRunning ? (
                     <Image source={stopIcon} style={styles.bigIcon}/>
                     ) : (
