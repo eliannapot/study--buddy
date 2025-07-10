@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 // import { buddies } from '../../data/buddies';
 import { useUsers } from '../../contexts/UserContext';
 import { getTop10BuddiesByXP, getTopFocusingBuddies } from '../../utils/buddyUtils.js';
+import { getXPStats, parseXPLog } from '../../utils/statisticsUtils.js';
 
 import AddBuddyContainer from '../../components/AddBuddyContainer';
 import BuddyList from '../../components/BuddyList';
@@ -16,13 +17,23 @@ const BuddiesScreen = () => {
 
     const { users, currentUserDoc } = useUsers();
 
-    const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);
+    // const filteredUsers = users.filter(u => u.$id !== currentUserDoc?.$id);
+    // const focusingBuddies = getTopFocusingBuddies(filteredUsers);
+    // const top10Buddies = getTop10BuddiesByXP(users);
+
+    const enrichedUsers = users.map(user => {
+        const parsedLog = parseXPLog(user.xpLog ?? []);
+        const stats = getXPStats(parsedLog);
+        return {
+            ...user,
+            xp: stats.total,
+        };
+    });
+
+    const filteredUsers = enrichedUsers.filter(u => u.$id !== currentUserDoc?.$id);
 
     const focusingBuddies = getTopFocusingBuddies(filteredUsers);
-    const top10Buddies = getTop10BuddiesByXP(users);
-
-    // const focusingBuddies = getTopFocusingBuddies(buddies);
-    // const top10Buddies = getTop10BuddiesByXP(buddies);
+    const top10Buddies = getTop10BuddiesByXP(enrichedUsers);
 
     return (
     <ScrollView contentContainerStyle={styles.container}>

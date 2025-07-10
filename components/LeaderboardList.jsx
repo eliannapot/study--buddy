@@ -1,4 +1,4 @@
-import {View, Text, FlatList, StyleSheet, Image} from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 
 import colors from '../app/config/colors';
 
@@ -20,7 +20,7 @@ const LeaderboardList = ({leaderboard}) => {
                 <FlatList
                     data={leaderboard}
                     scrollEnabled={false}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item) => item.$id}
                     renderItem={({ item, index }) => (
                         <LeaderboardItem item={item} index={index} />
                     )}
