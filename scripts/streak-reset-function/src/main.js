@@ -14,7 +14,7 @@ export default async ({ req, res, log, error }) => {
   const dbId = process.env.EXPO_PUBLIC_APPWRITE_DB_ID;
   const colId = process.env.EXPO_PUBLIC_APPWRITE_COL_USERS_ID;
 
-  const database = new Databases(client);
+  const databases = new Databases(client);
   
   try {
     
@@ -22,7 +22,7 @@ export default async ({ req, res, log, error }) => {
 
     const affectedUsers = [];
   
-    const users = await database.listDocuments(dbId, colId);
+    const users = await databases.listDocuments(dbId, colId);
 
     for (const user of users.documents) {
       const updates = {};
