@@ -1,13 +1,10 @@
+import { Client, Databases } from 'node-appwrite';
 
 
 // This Appwrite function will be executed every time your function is triggered
 export default async ({ req, res, log, error }) => {
 
-  const sdk = require("node-appwrite");
-
-  const client = new sdk.Client();
-
-  client 
+  const client = new Client()
     .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT) 
     .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID)
     .setKey(req.headers['x-appwrite-key'] || ""); 
@@ -15,8 +12,7 @@ export default async ({ req, res, log, error }) => {
   const dbId = process.env.EXPO_PUBLIC_APPWRITE_DB_ID;
   const colId = process.env.EXPO_PUBLIC_APPWRITE_COL_USERS_ID;
 
-  const database = new sdk.Databases(client);
-
+  const database = new Databases(client);
   
 
   try {
