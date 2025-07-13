@@ -4,6 +4,8 @@ import { Client, Databases } from 'node-appwrite';
 // This Appwrite function will be executed every time your function is triggered
 export default async ({ req, res, log, error }) => {
 
+  log("Function triggered: resetting daily goals");
+
   const client = new Client()
     .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT) 
     .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID)
@@ -14,8 +16,11 @@ export default async ({ req, res, log, error }) => {
 
   const database = new Databases(client);
   
-
   try {
+    
+    log(`Fetching users from DB: ${dbId}, collection: ${colId}`);
+
+    const affectedUsers = [];
   
     const users = await database.listDocuments(dbId, colId);
 
@@ -24,18 +29,31 @@ export default async ({ req, res, log, error }) => {
 
       if (user.hasMetDailyGoal !== true) {
         updates.streak = 0;
+        log(`Resetting streak for user ${user.$id}`);
       }
       updates.hasMetDailyGoal = false;
 
       await databases.updateDocument(dbId, colId, user.$id, updates);
+    
+      log(`Updated user ${user.$id} with: ${JSON.stringify(updates)}`);
+
+      affectedUsers.push({
+        id: user.$id,
+        name: user.name || "Unnamed",
+        updatedFields: updates,
+      });
     }
-  
-    return res.json(updates);
+
+    log(`Total users updated: ${affectedUsers.length}`);  
+    return res.json({
+      success: true,
+      message: `${affectedUsers.length} users updated.`,
+      updatedUsers: affectedUsers,
+    });
 
   } catch (err) {
     
-    console.error(err);
-    
+    error(`Error occurred: ${err.message}`);
     return res.json({ error: err.message });
   
   }
