@@ -6,7 +6,8 @@ export default async ({ req, res, log, error }) => {
 
   const client = new Client()
     .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT) 
-    .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID); 
+    .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID)
+    .setKey(req.headers['x-appwrite-key'] || ""); 
     
   const dbId = process.env.EXPO_PUBLIC_APPWRITE_DB_ID;
   const colId = process.env.EXPO_PUBLIC_APPWRITE_COL_USERS_ID;
@@ -29,7 +30,7 @@ export default async ({ req, res, log, error }) => {
       await databases.updateDocument(dbId, colId, user.$id, updates);
     }
   
-    return res.json({ success: true });
+    return res.json(updates);
 
   } catch (err) {
     
