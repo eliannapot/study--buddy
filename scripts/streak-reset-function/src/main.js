@@ -1,4 +1,4 @@
-import { Client, Databases } from 'react-native-appwrite';
+import { Client, Databases } from 'appwrite';
 
 
 // This Appwrite function will be executed every time your function is triggered
@@ -47,6 +47,8 @@ export default async ({ req, res, log, error }) => {
     return res.json({ error: err.message });
   
   }
+
+};
     // const people = new Users(client);
 
   // try {
@@ -71,4 +73,4 @@ export default async ({ req, res, log, error }) => {
   //   connect: "https://appwrite.io/discord",
   //   getInspired: "https://builtwith.appwrite.io",
   // });
-};
+
