@@ -9,9 +9,11 @@ import { useEffect } from 'react';
 import colors from "./config/colors";
 
 import { AuthProvider } from "../contexts/AuthContext";
+import { BadgeProvider } from "../contexts/BadgeContext";
 import { CategoryProvider } from "../contexts/CategoryContext";
 import { EventsProvider } from "../contexts/EventContext";
 import { TasksProvider } from "../contexts/TaskContext";
+import { UserBadgeProvider } from "../contexts/UserBadgeContext";
 import { UsersProvider } from "../contexts/UserContext";
 
 SplashScreen.preventAutoHideAsync();
@@ -71,6 +73,8 @@ const RootLayout = () => {
   <TasksProvider>
   <EventsProvider>
   <UsersProvider>
+  <BadgeProvider>
+  <UserBadgeProvider>
   <StatusBar backgroundColor = {colors.primary} />
   <Stack
     screenOptions={{
@@ -96,6 +100,8 @@ const RootLayout = () => {
     <Stack.Screen name="auth" options={{ headerShown: false }} />
 
   </Stack>
+  </UserBadgeProvider>
+  </BadgeProvider>
   </UsersProvider>
   </EventsProvider>
   </TasksProvider>
