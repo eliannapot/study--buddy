@@ -1,10 +1,14 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Modal from "react-native-modal";
 
+import { useBadges } from "../contexts/BadgeContext.js";
+import { useUserBadges } from "../contexts/UserBadgeContext.js";
 import { useUsers } from "../contexts/UserContext.js";
+
+import { checkTaskBadges } from "../utils/badgeUtils.js";
 
 import colors from "../app/config/colors";
 import candy from "../assets/images/candy.png";
@@ -14,41 +18,81 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
     if (!task) 
         return null; 
 
-    const { currentUserDoc, updateCurrentUser, users, updateUserById, handleUserActivity } = useUsers();
 
-    const [taskStatus, setTaskStatus] = useState(task.status || "Not Started"); // Default to "Not Started" if status is not set
-    
+    const { currentUserDoc, updateCurrentUser, users, updateUserById, handleUserActivity } = useUsers();
+    const { badges: allBadges } = useBadges();
+    const { addUserBadge, userBadges } = useUserBadges();
+
+    const [taskStatus, setTaskStatus] = useState(task?.status || "Not Started");
+    const [notification, setNotification] = useState(null);
+
+    const showNotification = (message, isError = false) => {
+        setNotification({ message, isError });
+        setTimeout(() => setNotification(null), 3000);
+    };
+
     const handleStatusChange = async (value) => {
         if (value !== task.status) {
-            onStatusChange(task.$id, { status: value });
-            setTaskStatus(value); // Update the local state with the new status
-            Alert.alert("Task Updated", `Status changed to "${value}"`);
+            try {
+                await onStatusChange(task.$id, { status: value });
+                setTaskStatus(value);
+                
+                if (value === "Done") {
+                    await handleTaskCompletion();
+                    showNotification("Task completed successfully!");
+                } else {
+                    showNotification(`Status changed to "${value}"`);
+                }
+            } catch (error) {
+                showNotification("Failed to update task", true);
+                console.error("Status change error:", error);
+            }
+        }
+    };
 
-            if (value === "Done" && Array.isArray(task.studyBuddy) && task.studyBuddy.length > 0) {
-                const xpPoints = task.xp || 1;
-                const now = new Date().toISOString();
-                const taskId = task.$id;
-                const newLogEntry = `${now}-${xpPoints}-${taskId}`;
+    const handleTaskCompletion = async () => {
+        const isCommonTask = Array.isArray(task.studyBuddy) && task.studyBuddy.length >= 2;
+        
+        // Handle XP logging
+        if (isCommonTask) {
+            await handleCommonTaskXP();
+        }
+        
+        // Check for badge achievements
+        const earnedBadges = await checkTaskBadges(
+            currentUserDoc.$id, 
+            isCommonTask, 
+            allBadges,
+            userBadges,
+            addUserBadge 
+        );
+        
+        if (earnedBadges.length > 0) {
+            showNotification(`🎉 Earned ${earnedBadges[0].title} badge!`);
+        }
+    };
 
-                // Loop through each buddy
-                for (const buddy of users) {
-                    if (!task.studyBuddy.includes(buddy.name)) continue;
+    const handleCommonTaskXP = async () => {
+        const xpPoints = task.xp || 1;
+        const now = new Date().toISOString();
+        const taskId = task.$id;
+        const newLogEntry = `${now}-${xpPoints}-${taskId}`;
 
-                    const xpLog = buddy.xpLog || [];
-                    const alreadyLogged = xpLog.some(entry => entry.includes(`-${taskId}`));
+        for (const buddy of users) {
+            if (!task.studyBuddy.includes(buddy.name)) continue;
 
-                    if (!alreadyLogged) {
-                        const updatedXpLog = [...xpLog, newLogEntry];
+            const xpLog = buddy.xpLog || [];
+            const alreadyLogged = xpLog.some(entry => entry.includes(`-${taskId}`));
 
-                        if (buddy.$id === currentUserDoc?.$id) {
-                            await updateCurrentUser({ xpLog: updatedXpLog });
-                            await handleUserActivity(currentUserDoc.$id);
-                        } else {
-                            await updateUserById(buddy.$id, { xpLog: updatedXpLog });
-                            await handleUserActivity(buddy.$id);
-                        }
-                    }
-                }   
+            if (!alreadyLogged) {
+                const updatedXpLog = [...xpLog, newLogEntry];
+                if (buddy.$id === currentUserDoc?.$id) {
+                    await updateCurrentUser({ xpLog: updatedXpLog });
+                    await handleUserActivity(currentUserDoc.$id);
+                } else {
+                    await updateUserById(buddy.$id, { xpLog: updatedXpLog });
+                    await handleUserActivity(buddy.$id);
+                }
             }
         }
     };
@@ -81,6 +125,17 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
       animationIn="zoomIn"
       animationOut="zoomOut"
     >
+
+        {/* Notification Banner */}
+        {notification && (
+            <View style={[
+                styles.notificationBanner,
+                notification.isError ? styles.errorBanner : styles.successBanner
+            ]}>
+                <Text style={styles.notificationText}>{notification.message}</Text>
+            </View>
+        )}
+
         <View style={styles.modalHeader}>
             <TouchableOpacity onPress={onClose}>
                 <FontAwesome name="caret-left" size={35} color="white" style={{ marginLeft: 15 }} />
@@ -184,6 +239,25 @@ const styles = StyleSheet.create({
     modalContainer: {
         justifyContent: "center",
         alignItems: "center",
+    },
+    notificationBanner: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        padding: 10,
+        zIndex: 1000,
+    },
+    successBanner: {
+        backgroundColor: colors.success,
+    },
+    errorBanner: {
+        backgroundColor: colors.error,
+    },
+    notificationText: {
+        color: 'white',
+        textAlign: 'center',
+        fontFamily: 'InterSemiBold',
     },
     modalHeader: {
         width: "100%",

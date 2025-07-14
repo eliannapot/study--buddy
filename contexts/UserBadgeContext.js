@@ -48,16 +48,21 @@ export const UserBadgeProvider = ({ children }) => {
   };
 
   // Add a new badge
-  const addUserBadge = async (badgeId, isFavourite = false) => {
+  const addUserBadge = async (userId, badgeId, isFavourite = false) => {
     if (!badgeId) {
       Alert.alert("Error", "No badge ID provided");
       return;
     }
-    const response = await userBadgeService.addUserBadge(user.$id, badgeId, isFavourite);
-    if (response.error) {
-      Alert.alert("Error", response.error);
-    } else {
-      setUserBadges([...userBadges, response.data]);
+    try {
+      const response = await userBadgeService.addUserBadge(userId, badgeId, isFavourite);
+      if (response.error) {
+              throw new Error(response.error);
+          }
+          setUserBadges(prev => [...prev, response.data]);
+          return response.data; // Return the created badge
+    } catch (error) {
+      console.error("Error adding user badge:", error);
+      throw error; // Re-throw to handle in calling code
     }
   };
 

@@ -20,8 +20,6 @@ const BadgesScreen = () => {
 
     // Merge badges with user-specific data (isWon, isFavourite, etc.)
     const getMergedBadges = () => {
-        console.log("All Badges:", allBadges);
-        console.log("User Badges:", userBadges);
         return allBadges.map((badge) => {
             const userBadge = userBadges.find((ub) => ub.badge_id === badge.$id);
             return {
