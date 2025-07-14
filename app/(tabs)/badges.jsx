@@ -1,50 +1,75 @@
-import React from 'react';
 import { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, Alert } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import BadgeItem from '../../components/BadgeItem';
 
 import Icon from "react-native-vector-icons/Ionicons";
-
 import colors from '../../app/config/colors';
-import { badges } from '../../data/badges';
+
+import { useAuth } from '../../contexts/AuthContext';
+import { useBadges } from '../../contexts/BadgeContext';
+import { useUserBadges } from '../../contexts/UserBadgeContext';
 
 const BadgesScreen = () => {
-   
-    const [allBadges, setAllBadges] = useState(badges);
 
-    const groupedBadges = allBadges.reduce((acc, badge) => {
+    const { user } = useAuth();
+    const { badges: allBadges } = useBadges();
+    const { userBadges, updateUserBadge, loading } = useUserBadges();
+       
+    const [activeBadgeId, setActiveBadgeId] = useState(null); 
+
+    // Merge badges with user-specific data (isWon, isFavourite, etc.)
+    const getMergedBadges = () => {
+        console.log("All Badges:", allBadges);
+        console.log("User Badges:", userBadges);
+        return allBadges.map((badge) => {
+            const userBadge = userBadges.find((ub) => ub.badge_id === badge.$id);
+            return {
+                ...badge,
+                id: badge.$id, 
+                isWon: !!userBadge,
+                isActive: activeBadgeId === badge.$id,
+                isFavourite: userBadge?.isFavourite || false,
+                dateEarned: userBadge?.dateEarned || null,
+                // Keep all original badge fields (type, title, criteriaKey)
+            };
+        });
+    };
+
+    
+    const toggleFavourite = async (badgeId) => {
+        try{
+            const userBadge = userBadges.find((ub) => ub.badge_id === badgeId);
+            const currentFavourites = userBadges.filter((b) => b.isFavourite).length;
+
+            // Enforce max 3 favourites
+            if (!userBadge?.isFavourite && currentFavourites >= 3) {
+                Alert.alert("Max Favourites", "You can only have up to 3 favourite badges.");
+            return;
+            }
+
+            await updateUserBadge(userBadge.$id, {
+                isFavourite: !userBadge.isFavourite
+            });
+        
+        } catch (error) {
+            Alert.alert("Error", error.message);
+        }
+    };
+
+    const groupedBadges = getMergedBadges().reduce((acc, badge) => {
         if (!acc[badge.type]) acc[badge.type] = [];
         acc[badge.type].push(badge);
         return acc;
     }, {});
-
     
-    const toggleFavourite = (id) => {
-        setAllBadges((prevBadges) => {
-            const favouriteCount = prevBadges.filter(b => b.isFavourite).length;
-
-            return prevBadges.map(badge => {
-                if (badge.id === id) {
-                    if (!badge.isFavourite && favouriteCount >= 3) {
-                        Alert.alert("Max Favourites", "You can only have up to 3 favourite badges.");
-                        return badge;
-                    }
-
-                    return {
-                        ...badge,
-                        isFavourite: !badge.isFavourite
-                    };
-                }
-                return badge;
-            });
-        });
-    };
-
-    const [activeBadgeId, setActiveBadgeId] = useState(null); 
-    const toggleActiveBadge = (id) => {
-        setActiveBadgeId(prev => (prev === id ? null : id)); 
-    };
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+        );
+    }
 
     
     return (
@@ -61,13 +86,13 @@ const BadgesScreen = () => {
                     <FlatList
                         horizontal
                         data={items}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.$id}
                         renderItem={({ item }) => 
                             <BadgeItem 
                                 badge={item} 
-                                isActive={activeBadgeId === item.id} 
-                                onPress={() => toggleActiveBadge(item.id)} 
-                                onToggleFavourite={toggleFavourite}
+                                isActive={activeBadgeId === item.$id} 
+                                onPress={() => setActiveBadgeId(item.$id)} 
+                                onToggleFavourite={() => toggleFavourite(item.$id)} 
                             />}
                         showsHorizontalScrollIndicator={false}
                     />
