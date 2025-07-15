@@ -111,7 +111,7 @@ const CalendarScreen = () => {
                     <FlatList
                         data={dailyItems}
                         keyExtractor={(item, index) => `${item.type}-${item.$id || index}`}
-                        renderItem={({ item }) => <CalendarItem item={item} />}
+                        renderItem={({ item }) => <CalendarItem item={item} key={item.$id}/>}
                         scrollEnabled={true}
                     />
                 </View>
