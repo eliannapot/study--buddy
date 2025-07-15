@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet, Pressable, TouchableOpacity} from "react-native";
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -20,7 +20,7 @@ const BadgeItem = ({ badge, isActive, onPress, onToggleFavourite }) => {
     
 
     return(
-        <Pressable onPress={onPress}>
+        <Pressable onPress={onPress} style={styles.container}>
          { isActive ? 
             ( 
                     <View style={styles.activeView} >
@@ -32,10 +32,12 @@ const BadgeItem = ({ badge, isActive, onPress, onToggleFavourite }) => {
                         size={100}
                         />
                         <View style={styles.infoContainer}>
-                            <Text style={styles.badgeText}>
-                                {badge.isWon ? 
-                                    ( badge.title ) : ("???")}
-                            </Text>
+                            <View style={styles.titleContainer}>    
+                                <Text style={[styles.badgeText, , {textAlign: "flex-start"}]}>
+                                    {badge.isWon ? 
+                                        ( badge.title ) : ("???")}
+                                </Text>
+                            </View>
                             <Text style={styles.badgeDate}>
                             {badge.isWon ? 
                             ( 
@@ -68,10 +70,16 @@ const BadgeItem = ({ badge, isActive, onPress, onToggleFavourite }) => {
                         stroke={colors.black}
                         size={100}
                     />
-                    <Text style={styles.badgeText}>
-                        {badge.isWon ? 
-                           ( badge.title ) : ("???")}
-                    </Text>
+                    <View style={styles.titleContainer}>
+                        <Text 
+                            style={styles.badgeText}
+                            numberOfLines={3}
+                            ellipsizeMode="tail"
+                        >
+                            {badge.isWon ? 
+                            ( badge.title ) : ("???")}
+                        </Text>
+                    </View>
                 </View>
             )}
         </Pressable>
@@ -83,7 +91,12 @@ const BadgeItem = ({ badge, isActive, onPress, onToggleFavourite }) => {
 export default BadgeItem;
 
 const styles = StyleSheet.create({
+    container: {
+        // width: 180,
+    },
     activeView: {
+        width: 280,
+        height: 200,
         padding: 15,
         paddingBottom: 40,
         margin: 5,
@@ -96,8 +109,8 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     infoContainer: {
-        paddingHorizontal: 15,
-        justifyContent: "center",
+        paddingLeft: 15,
+        flex: 1,
     },
     favouriteContainer: {
         flexDirection: "row", 
@@ -105,15 +118,23 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     inactiveView: {
+        width: 150,
+        height: 200,
         padding: 15,
         margin: 5,
         backgroundColor: colors.hexToRGBA(colors.tertiary, 0.15),
         borderRadius: 15,
         alignItems: "center",
     },
+    titleContainer: {
+        minHeight: 40,
+        justifyContent: "center",
+    },
     badgeText: {
         fontSize: 16,
         fontFamily: "InterRegular",
+        flexShrink: 1,
+        textAlign: "center",
     },
     badgeDate: {
         fontSize: 16,

@@ -93,6 +93,8 @@ const BadgesScreen = () => {
                                 onToggleFavourite={() => toggleFavourite(item.$id)} 
                             />}
                         showsHorizontalScrollIndicator={false}
+                        snapToInterval={180+10}
+                        decelerationRate={"fast"}
                     />
                 </View>
             ))}
