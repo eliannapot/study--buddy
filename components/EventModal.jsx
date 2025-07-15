@@ -1,10 +1,15 @@
 import { Feather, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 
+import { useAuth } from "../contexts/AuthContext.js";
+import { useBadges } from "../contexts/BadgeContext.js";
 import { useEvents } from "../contexts/EventContext.js";
+import { useUserBadges } from "../contexts/UserBadgeContext.js";
 import { useUsers } from "../contexts/UserContext.js";
+
+import { checkEventBadges } from "../utils/badgeUtils.js";
 
 import colors from "../app/config/colors";
 import candy from "../assets/images/candy.png";
@@ -14,11 +19,20 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
         return null; 
 
     const { currentUserDoc, updateCurrentUser, updateUserById, users } = useUsers();
-    const { editEvent } = useEvents();
+    const { editEvent, events } = useEvents();
+    const { user } = useAuth();
+    const { badges: allBadges } = useBadges();
+    const { userBadges, addUserBadge } = useUserBadges();
 
     const [isPast, setIsPast] = useState(false);
     const [attending, setAttending] = useState(event?.attended === true);
+    const [notification, setNotification] = useState(null);
     
+    const showNotification = (message, isError = false) => {
+        setNotification({ message, isError });
+        setTimeout(() => setNotification(null), 3000);
+    };
+
     useEffect(() => {
         if (event?.end_date) {
             const now = new Date();
@@ -39,7 +53,6 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
         const newStatus = !attending; // toggle true ↔ false
 
         try {
-            console.log("Toggling attendance for event:", event.$id, "to", newStatus);
             await editEvent(event.$id, { attended: newStatus });
             setAttending(newStatus);
 
@@ -54,6 +67,20 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
                     await updateCurrentUser({ 
                         xpLog: [...xpLog, newLogEntry]
                     });
+                    showNotification(`You earned ${event.xp} XP for attending this event!`);
+                }
+
+                // Check and award badges
+                const earnedBadges = await checkEventBadges(
+                    user.$id,
+                    events,
+                    allBadges,
+                    userBadges,
+                    addUserBadge
+                );
+
+                if (earnedBadges.length > 0) {
+                    showNotification(`Earned: ${earnedBadges[0].title} badge!`);
                 }
             } else {
                 // Marking as not attended → remove XP log if exists
@@ -64,6 +91,7 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
                 await updateCurrentUser({
                     xpLog: filteredXpLog
                 });
+                showNotification("Event marked as not attended.");
             }
 
         } catch (error) {
@@ -109,6 +137,16 @@ const EventModal = ({ visible, event, onClose, onEdit, onDelete }) => {
       animationIn="zoomIn"
       animationOut="zoomOut"
     >
+        {/* Notification Banner */}
+        {notification && (
+            <View style={[
+                styles.notificationBanner,
+                notification.isError ? styles.errorBanner : styles.successBanner
+            ]}>
+                <Text style={styles.notificationText}>{notification.message}</Text>
+            </View>
+        )}
+
         <View style={styles.modalHeader}>
             <TouchableOpacity onPress={onClose}>
                 <FontAwesome name="caret-left" size={35} color="white" style={{ marginLeft: 15 }} />
@@ -283,6 +321,25 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10,
         padding: 10,
+    },
+    notificationBanner: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        padding: 10,
+        zIndex: 1000,
+    },
+    successBanner: {
+        backgroundColor: colors.success,
+    },
+    errorBanner: {
+        backgroundColor: colors.error,
+    },
+    notificationText: {
+        color: 'white',
+        textAlign: 'center',
+        fontFamily: 'InterSemiBold',
     },
     eventTitle: {
         fontFamily: "LailaBold",

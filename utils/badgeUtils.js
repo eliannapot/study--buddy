@@ -62,3 +62,65 @@ export const checkTaskBadges = async (userId, tasks, isCommonTask, allBadges, us
   }
 };
 
+export const checkEventBadges = async (userId, events, allBadges, userBadges, addUserBadge) => {
+  try {
+    // Filter only event-related badges that have valid criteriaKey
+    const eventBadges = allBadges.filter(badge => {
+      if (!badge.criteriaKey) return false;
+      return badge.criteriaKey.startsWith('event_') || 
+             badge.criteriaKey.startsWith('common-event_');
+    });
+
+    if (eventBadges.length === 0) {
+      console.log('No valid event badges found');
+      return [];
+    }
+
+    // Count attended events of each type
+    const attendedRegularEvents = events.filter(event => 
+      event.attended === true && 
+      (!event.studyBuddy || event.studyBuddy.length < 2)
+    ).length;
+
+    const attendedCommonEvents = events.filter(event => 
+      event.attended === true && 
+      event.studyBuddy && 
+      event.studyBuddy.length >= 2
+    ).length;
+
+    console.log(`Attended regular events: ${attendedRegularEvents}, common events: ${attendedCommonEvents}`);
+
+    // Find badges to award
+    const badgesToAward = eventBadges.filter(badge => {
+      const [type, requiredCountStr] = badge.criteriaKey.split('_');
+      const requiredCount = parseInt(requiredCountStr);
+      
+      const attendedCount = type === 'common-event' ? 
+        attendedCommonEvents : 
+        attendedRegularEvents;
+      
+      const alreadyHasBadge = userBadges.some(ub => ub.badge_id === badge.$id);
+      
+      return attendedCount >= requiredCount && !alreadyHasBadge;
+    });
+
+    // Award new badges
+    const earnedBadges = [];
+    for (const badge of badgesToAward) {
+      try {
+        const result = await addUserBadge(userId, badge.$id, false); 
+        if (result?.$id) {
+          earnedBadges.push(badge);
+          console.log(`Awarded event badge: ${badge.title}, to user ${userId}`);
+        }
+      } catch (error) {
+        console.error(`Failed to award event badge ${badge.title}:`, error);
+      }
+    }
+    
+    return earnedBadges;
+  } catch (error) {
+    console.error('Error in checkEventBadges:', error);
+    return [];
+  }
+};
