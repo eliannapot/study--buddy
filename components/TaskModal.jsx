@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Modal from "react-native-modal";
 
+import { useAuth } from "../contexts/AuthContext.js";
 import { useBadges } from "../contexts/BadgeContext.js";
 import { useUserBadges } from "../contexts/UserBadgeContext.js";
 import { useUsers } from "../contexts/UserContext.js";
@@ -22,6 +23,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
     const { currentUserDoc, updateCurrentUser, users, updateUserById, handleUserActivity } = useUsers();
     const { badges: allBadges } = useBadges();
     const { addUserBadge, userBadges } = useUserBadges();
+    const { user } = useAuth();
 
     const [taskStatus, setTaskStatus] = useState(task?.status || "Not Started");
     const [notification, setNotification] = useState(null);
@@ -60,7 +62,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
         
         // Check for badge achievements
         const earnedBadges = await checkTaskBadges(
-            currentUserDoc.$id, 
+            user?.$id, 
             isCommonTask, 
             allBadges,
             userBadges,

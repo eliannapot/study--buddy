@@ -102,7 +102,7 @@ const BadgesScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
+        padding: 2,
     },
     titleContainer: {
         flexDirection: 'row',

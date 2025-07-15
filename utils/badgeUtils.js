@@ -21,6 +21,7 @@ export const checkTaskBadges = async (userId, isCommonTask, allBadges, userBadge
         const badge = allBadges.find(b => b.$id === ub.badge_id);
         return badge?.criteriaKey?.startsWith(prefix);
     }).length + 1; // +1 for current task
+    console.log(`Completed count for ${isCommonTask ? 'common task' : 'task'}:`, completedCount);
 
     // Find badges to award
     const badgesToAward = taskBadges.filter(badge => {
@@ -33,10 +34,10 @@ export const checkTaskBadges = async (userId, isCommonTask, allBadges, userBadge
     const earnedBadges = [];
     for (const badge of badgesToAward) {
         try {
-            const result = await addUserBadge(userId, badge.$id, false); // Changed this line
+            const result = await addUserBadge(userId, badge.$id, false); 
             if (result?.$id) {
                 earnedBadges.push(badge);
-                console.log(`Awarded badge: ${badge.title}`);
+                console.log(`Awarded badge: ${badge.title}, to user ${userId}`);
             }
         } catch (error) {
             console.error(`Failed to award badge ${badge.title}:`, error);
@@ -49,3 +50,4 @@ export const checkTaskBadges = async (userId, isCommonTask, allBadges, userBadge
       return [];
   }
 };
+

@@ -8,7 +8,6 @@ const badgeService = {
     async getBadges() {
         try {
             const response = await databaseService.listDocuments(dbId, colId);
-            console.log("Badges fetched:", response);
             return response; 
         } catch (error) {
             console.log("Error fetching Badges:", error);
