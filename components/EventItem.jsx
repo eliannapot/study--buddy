@@ -68,7 +68,6 @@ const EventItem = ({ event }) => {
                     <TouchableOpacity 
                         hitSlop={{ top: 40, bottom: 10, left: 40, right: 10 }}
                         onPress={() => {
-                            console.log("Opening event:", event);
                             openEvent(event)}}
                     >
                         <Text style={styles.showEventDetails}>...</Text>
