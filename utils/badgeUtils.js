@@ -1,5 +1,5 @@
 
-export const checkTaskBadges = async (userId, isCommonTask, allBadges, userBadges, addUserBadge) => {
+export const checkTaskBadges = async (userId, tasks, isCommonTask, allBadges, userBadges, addUserBadge) => {
       
   try {
     // Filter only task-related badges that have valid criteriaKey
@@ -15,17 +15,28 @@ export const checkTaskBadges = async (userId, isCommonTask, allBadges, userBadge
         return [];
     }
 
-    // Count completed tasks of this type
-    const prefix = isCommonTask ? 'common-task_' : 'task_';
-    const completedCount = userBadges.filter(ub => {
-        const badge = allBadges.find(b => b.$id === ub.badge_id);
-        return badge?.criteriaKey?.startsWith(prefix);
-    }).length + 1; // +1 for current task
-    console.log(`Completed count for ${isCommonTask ? 'common task' : 'task'}:`, completedCount);
+    // Count completed tasks of each type
+    const completedRegularTasks = tasks.filter(task => 
+        task.status === "Done" && 
+        (!task.studyBuddy || task.studyBuddy.length < 2)
+    ).length;
 
+    const completedCommonTasks = tasks.filter(task => 
+        task.status === "Done" && 
+        task.studyBuddy && 
+        task.studyBuddy.length >= 2
+    ).length;
+
+    console.log(`Completed regular tasks: ${completedRegularTasks}, common tasks: ${completedCommonTasks}`);
+    
     // Find badges to award
     const badgesToAward = taskBadges.filter(badge => {
-        const requiredCount = parseInt(badge.criteriaKey.split('_')[1]);
+        const [type, requiredCountStr] = badge.criteriaKey.split('_');
+        const requiredCount = parseInt(requiredCountStr);
+      
+        const completedCount = type === 'common-task' ? 
+        completedCommonTasks : completedRegularTasks ;
+
         const alreadyHasBadge = userBadges.some(ub => ub.badge_id === badge.$id);
         return completedCount >= requiredCount && !alreadyHasBadge;
     });
