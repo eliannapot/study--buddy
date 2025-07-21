@@ -48,10 +48,6 @@ const TimerScreen = () => {
 
     const handleTimerStop = async () => {
         setIsRunning(false);
-        //
-        console.log("Timer stopped. Total seconds:", seconds);
-        console.log("Current user document:", currentUserDoc);
-        //
         const completedHalfHours = Math.floor(seconds / (30 * 60)); // 30 minutes
 
         if (completedHalfHours > 0) {
