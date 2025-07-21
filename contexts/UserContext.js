@@ -3,12 +3,19 @@ import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 
 import colors from '../app/config/colors';
 import userService from '../services/userService';
+
+import { checkStreakBadges } from '../utils/badgeUtils';
+
 import { useAuth } from './AuthContext';
+import { useBadges } from './BadgeContext';
+import { useUserBadges } from './UserBadgeContext';
 
 const UsersContext = createContext();
 
 export const UsersProvider = ({ children }) => {
     const { user } = useAuth();
+    const { badges: allBadges } = useBadges();
+    const { userBadges, addUserBadge } = useUserBadges();
 
     const [users, setUsers] = useState([]);
     const [currentUserDoc, setCurrentUserDoc] = useState(null);
@@ -122,6 +129,17 @@ export const UsersProvider = ({ children }) => {
                     ...prev,
                     ...updateData,
                 }));
+            }
+
+            const earnedBadges = await checkStreakBadges(
+                userDoc.$id,
+                updatedStreak,
+                allBadges,
+                userBadges,
+                addUserBadge
+            );
+            if (earnedBadges.length > 0) {
+                Alert.alert("New Badges Earned", `You earned: ${earnedBadges.map(b => b.title).join(', ')}`);
             }
         }
     };

@@ -124,3 +124,52 @@ export const checkEventBadges = async (userId, events, allBadges, userBadges, ad
     return [];
   }
 };
+
+export const checkStreakBadges = async (userId, currentStreak, allBadges, userBadges, addUserBadge) => {
+  try {
+    // Filter only streak-related badges that have valid criteriaKey
+    const streakBadges = allBadges.filter(badge => {
+      if (!badge.criteriaKey) return false;
+      return badge.criteriaKey.startsWith('streak_');
+    });
+
+    if (streakBadges.length === 0) {
+      console.log('No valid streak badges found');
+      return [];
+    }
+
+    console.log(`Current streak: ${currentStreak}`);
+
+    // Find badges to award
+    const badgesToAward = streakBadges.filter(badge => {
+      const [_, requiredDaysStr] = badge.criteriaKey.split('_');
+      const requiredDays = parseInt(requiredDaysStr);
+      
+      const alreadyHasBadge = userBadges.some(ub => ub.badge_id === badge.$id);
+      
+      return currentStreak >= requiredDays && !alreadyHasBadge;
+    });
+
+    // Award new badges
+    const earnedBadges = [];
+    
+    for (const badge of badgesToAward) {
+      try {
+        const result = await addUserBadge(userId, badge.$id, false); 
+        if (result?.$id) {
+          earnedBadges.push(badge);
+          console.log(`Awarded streak badge: ${badge.title}, to user ${userId}`);
+        }
+      } catch (error) {
+        console.error(`Failed to award streak badge ${badge.title}:`, error);
+      }
+    }
+
+    return earnedBadges;
+  
+  } catch (error) {
+    console.error('Error in checkStreakBadges:', error);
+    return [];
+  }
+
+};
