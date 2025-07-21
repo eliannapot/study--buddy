@@ -132,7 +132,7 @@ export const UsersProvider = ({ children }) => {
             }
 
             const earnedBadges = await checkStreakBadges(
-                userDoc.$id,
+                user.$id,
                 updatedStreak,
                 allBadges,
                 userBadges,

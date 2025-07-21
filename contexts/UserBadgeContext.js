@@ -36,15 +36,19 @@ export const UserBadgeProvider = ({ children }) => {
   };
 
   // Fetch only favorite badges
-  const fetchFavouriteBadges = async () => {
+  const fetchFavouriteBadges = async (userId) => {
     setLoading(true);
-    const response = await userBadgeService.getFavouriteUserBadges(user.$id);
-    if (response.error) {
-      setError(response.error);
-    } else {
-      return response.data; // Return directly for specific use cases
+    try {
+        const response = await userBadgeService.getFavouriteUserBadges(userId);
+        console.log("Fetched favourite badges in Service:", response);
+        if (response.error) {
+            setError(response.error);
+            return []; // Return empty array instead of error object
+        }
+        return response.data || []; // Ensure we always return an array
+    } finally {
+        setLoading(false);
     }
-    setLoading(false);
   };
 
   // Add a new badge
