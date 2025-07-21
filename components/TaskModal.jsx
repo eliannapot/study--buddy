@@ -58,9 +58,7 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
         const isCommonTask = Array.isArray(task.studyBuddy) && task.studyBuddy.length >= 2;
         
         // Handle XP logging
-        if (isCommonTask) {
-            await handleCommonTaskXP();
-        }
+        handleXPUpdate(isCommonTask);
         
         // Check for badge achievements
         const earnedBadges = await checkTaskBadges(
@@ -77,27 +75,40 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
         }
     };
 
-    const handleCommonTaskXP = async () => {
+    const handleXPUpdate = async (isCommonTask) => {
         const xpPoints = task.xp || 1;
         const now = new Date().toISOString();
         const taskId = task.$id;
         const newLogEntry = `${now}-${xpPoints}-${taskId}`;
 
-        for (const buddy of users) {
-            if (!task.studyBuddy.includes(buddy.name)) continue;
+        if (isCommonTask) {
+            // Handle common task XP for all study buddies
+            for (const buddy of users) {
+                if (!task.studyBuddy.includes(buddy.name)) continue;
 
-            const xpLog = buddy.xpLog || [];
+                const xpLog = buddy.xpLog || [];
+                const alreadyLogged = xpLog.some(entry => entry.includes(`-${taskId}`));
+
+                if (!alreadyLogged) {
+                    const updatedXpLog = [...xpLog, newLogEntry];
+                    if (buddy.$id === currentUserDoc?.$id) {
+                        await updateCurrentUser({ xpLog: updatedXpLog });
+                        await handleUserActivity(currentUserDoc.$id);
+                    } else {
+                        await updateUserById(buddy.$id, { xpLog: updatedXpLog });
+                        await handleUserActivity(buddy.$id);
+                    }
+                }
+            }
+        } else {
+            // Handle individual task XP for just the current user
+            const xpLog = currentUserDoc?.xpLog || [];
             const alreadyLogged = xpLog.some(entry => entry.includes(`-${taskId}`));
-
+            
             if (!alreadyLogged) {
                 const updatedXpLog = [...xpLog, newLogEntry];
-                if (buddy.$id === currentUserDoc?.$id) {
-                    await updateCurrentUser({ xpLog: updatedXpLog });
-                    await handleUserActivity(currentUserDoc.$id);
-                } else {
-                    await updateUserById(buddy.$id, { xpLog: updatedXpLog });
-                    await handleUserActivity(buddy.$id);
-                }
+                await updateCurrentUser({ xpLog: updatedXpLog });
+                await handleUserActivity(currentUserDoc.$id);
             }
         }
     };
