@@ -15,10 +15,12 @@ export const getXPStats = (xpEntries) => {
   const now = dayjs();
   const today = now.startOf('day');
   const thisWeek = now.subtract(7, 'day');
+  const lastMonday = now.startOf('week').add(1, 'day'); 
 
   let totalXP = 0;
   let todayXP = 0;
   let weekXP = 0;
+  let thisWeekXP = 0;
 
   xpEntries.forEach(({ timestamp, xp }) => {
     const entryTime = dayjs(timestamp);
@@ -33,11 +35,16 @@ export const getXPStats = (xpEntries) => {
     if (entryTime.isAfter(thisWeek)) {
       weekXP += xp;
     }
+
+    if (entryTime.isAfter(lastMonday)) {
+      thisWeekXP += xp;
+    }
   });
 
   return {
     total: totalXP,
     today: todayXP,
     week: weekXP,
+    thisWeek: thisWeekXP,
   };
 };
