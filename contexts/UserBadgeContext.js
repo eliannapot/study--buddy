@@ -40,12 +40,11 @@ export const UserBadgeProvider = ({ children }) => {
     setLoading(true);
     try {
         const response = await userBadgeService.getFavouriteUserBadges(userId);
-        console.log("Fetched favourite badges in Service:", response);
         if (response.error) {
             setError(response.error);
-            return []; // Return empty array instead of error object
+            return []; 
         }
-        return response.data || []; // Ensure we always return an array
+        return response.data || []; 
     } finally {
         setLoading(false);
     }

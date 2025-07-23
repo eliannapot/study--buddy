@@ -69,12 +69,12 @@ const RootLayout = () => {
   return (
   <>
   <AuthProvider>
-  <CategoryProvider>
-  <TasksProvider>
-  <EventsProvider>
   <BadgeProvider>
   <UserBadgeProvider>
   <UsersProvider>
+  <CategoryProvider>
+  <TasksProvider>
+  <EventsProvider>
   <StatusBar backgroundColor = {colors.primary} />
   <Stack
     screenOptions={{
@@ -100,12 +100,12 @@ const RootLayout = () => {
     <Stack.Screen name="auth" options={{ headerShown: false }} />
 
   </Stack>
-  </UsersProvider>
-  </UserBadgeProvider>
-  </BadgeProvider>
   </EventsProvider>
   </TasksProvider>
   </CategoryProvider>
+  </UsersProvider>
+  </UserBadgeProvider>
+  </BadgeProvider>
   </AuthProvider>
   </>
   );

@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import colors from '../app/config/colors';
+import { StyleSheet, Text } from 'react-native';
 import badgeService from '../services/badgeService';
 import { useAuth } from './AuthContext';
 
@@ -28,17 +27,11 @@ export const BadgeProvider = ({ children }) => {
     }, [user]);
 
     return (
-        <BadgeContext.Provider value={{ badges, loading }}>
-            { loading ? (
-                <View style={{justifyContent: 'center', alignItems: 'center' }}> 
-                    <ActivityIndicator size ="large" color={colors.primary}  />
-                </View>
-            ): (
+        <BadgeContext.Provider value={{ badges, loading, error }}>
                 <>
                     {error && <Text style={styles.errorText}>{error}</Text>}
                     {children}
                 </>
-            )}
         </BadgeContext.Provider>
     );
 };
