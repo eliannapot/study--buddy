@@ -81,6 +81,7 @@ const CalendarItem = ({ item }) => {
             visible={eventModalVisible}
             event={selectedEvent}
             onClose={() => setEventModalVisible(false)}
+            key={selectedEvent?.$id}
         />
         <TaskModal
             visible={taskModalVisible}
@@ -88,6 +89,7 @@ const CalendarItem = ({ item }) => {
             onClose={() => setTaskModalVisible(false)}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            key={selectedTask?.$id}
         />
         
         </View>
