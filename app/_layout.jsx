@@ -12,6 +12,7 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { BadgeProvider } from "../contexts/BadgeContext";
 import { CategoryProvider } from "../contexts/CategoryContext";
 import { EventsProvider } from "../contexts/EventContext";
+import { NotificationProvider } from "../contexts/NotificationContext";
 import { TasksProvider } from "../contexts/TaskContext";
 import { UserBadgeProvider } from "../contexts/UserBadgeContext";
 import { UsersProvider } from "../contexts/UserContext";
@@ -72,6 +73,7 @@ const RootLayout = () => {
   <BadgeProvider>
   <UserBadgeProvider>
   <UsersProvider>
+  <NotificationProvider>
   <CategoryProvider>
   <TasksProvider>
   <EventsProvider>
@@ -103,6 +105,7 @@ const RootLayout = () => {
   </EventsProvider>
   </TasksProvider>
   </CategoryProvider>
+  </NotificationProvider>
   </UsersProvider>
   </UserBadgeProvider>
   </BadgeProvider>
