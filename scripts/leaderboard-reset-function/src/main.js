@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Client, Databases, Query } from 'node-appwrite';
+import { Client, Databases, ID, Query } from 'node-appwrite';
 
 // Helper functions from your app
 const parseXPLog = (xpLogStrings) => {
@@ -90,7 +90,7 @@ export default async ({ req, res, log, error }) => {
           notificationsColId,
           ID.unique(),
           {
-            user_id: user.id,
+            user_id: user.user_id,
             message,
             iconType: 'buddy',
             unread: true,
