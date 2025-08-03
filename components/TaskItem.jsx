@@ -37,9 +37,22 @@ const TaskItem = ({ task }) => {
         setModalVisible(false); 
     }
 
-    const handleStatusChange = (taskId, data) => {
-        const taskToUpdate = { ...selectedTask, ...data };
-        editTask(taskId ,taskToUpdate);
+    const handleStatusChange = async (newStatus) => {
+        try {
+            console.log("Updating status to:", newStatus);
+            
+            // Only send the status field to update
+            await editTask(selectedTask.$id, { status: newStatus });
+            
+            // Update local state
+            setSelectedTask(prev => ({
+                ...prev,
+                status: newStatus
+            }));
+            
+        } catch (err) {
+            console.error("Failed to update status:", err);
+        }
     };
 
 

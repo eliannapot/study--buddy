@@ -7,30 +7,38 @@ import colors from "../app/config/colors";
 import EventModal from "./EventModal";
 import TaskModal from "./TaskModal";
 
+import { useEvents } from "../contexts/EventContext";
 import { useTasks } from "../contexts/TaskContext";
 
-const CalendarItem = ({ item }) => {
+const CalendarItem = ({ item: originalItem }) => {
 
-    const { deleteTask } = useTasks();
+    const item = {
+        ...originalItem,
+        type: 'dueDate' in originalItem ? 'task' : 'date' in originalItem ? 'event' : null
+    }
 
-    const [selectedEvent, setSelectedEvent] = useState(null);
-    const [eventModalVisible, setEventModalVisible] = useState(false);
-    
-    const openEvent = (event) => {
-        setSelectedEvent(event);
-        setEventModalVisible(true);
-    };
 
-    
+    const { deleteTask, editTask } = useTasks();
     const [selectedTask, setSelectedTask] = useState(null);
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     
-    const openTask = (task) => {
-        setSelectedTask(task);
+    const openTask = () => {
+        console.log(item);
+        setSelectedTask(item);
         setTaskModalVisible(true);
     };
 
-    const handleEdit = () => {
+    const { deleteEvent } = useEvents();
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [eventModalVisible, setEventModalVisible] = useState(false);
+    
+    const openEvent = () => {
+        console.log(item);
+        setSelectedEvent(item);
+        setEventModalVisible(true);
+    };
+
+    const handleTaskEdit = () => {
             console.log("Editing task:", selectedTask);
             setTaskModalVisible(false);
             router.push({
@@ -39,21 +47,51 @@ const CalendarItem = ({ item }) => {
             });
         };
         
-    const handleDelete = () => {
+    const handleTaskDelete = () => {
         console.log("Deleting task:", selectedTask);
         deleteTask(selectedTask.$id); 
         setTaskModalVisible(false); 
     }
+
+    const handleStatusChange = async (newStatus) => {
+        try {
+            console.log("Updating status to:", newStatus);
+            
+            // Only send the status field to update
+            await editTask(selectedTask.$id, { status: newStatus });
+            
+            // Update local state
+            setSelectedTask(prev => ({
+                ...prev,
+                status: newStatus
+            }));
+            
+        } catch (err) {
+            console.error("Failed to update status:", err);
+        }
+    };
+
+    const handleEventEdit = () => {
+        console.log("Editing event:", selectedEvent);
+        setEventModalVisible(false);
+        router.push({
+            pathname: "/newEvent",
+            params: { eventId: selectedEvent.$id }
+        });
+    };
+
+    const handleEventDelete = () => {
+        console.log("Deleting event:", selectedEvent);
+        deleteEvent(selectedEvent.$id); 
+        setEventModalVisible(false); 
+    };
 
     return(
         <View>
 
         <TouchableOpacity 
             onPress={() => {
-                if (item.type === 'event') {
-                    openEvent(item)}
-                if (item.type === 'task') {
-                    openTask(item)}
+                item.type === 'task' ? openTask(item) : openEvent(item);
             }}
         >
         <View style={styles.itemContainer}>
@@ -78,18 +116,21 @@ const CalendarItem = ({ item }) => {
         </TouchableOpacity>
         
         <EventModal
+            key={selectedEvent?.$id}
             visible={eventModalVisible}
             event={selectedEvent}
             onClose={() => setEventModalVisible(false)}
-            key={selectedEvent?.$id}
+            onDelete={handleEventDelete}
+            onEdit={handleEventEdit}
         />
         <TaskModal
+            key={selectedTask?.$id}
             visible={taskModalVisible}
             task={selectedTask}
             onClose={() => setTaskModalVisible(false)}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-            key={selectedTask?.$id}
+            onDelete={handleTaskDelete}
+            onEdit={handleTaskEdit}
+            onStatusChange={ handleStatusChange }
         />
         
         </View>

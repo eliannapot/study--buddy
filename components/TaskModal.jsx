@@ -35,17 +35,18 @@ const TaskModal = ({ visible, task, onClose, onEdit, onDelete, onStatusChange })
         setTimeout(() => setNotification(null), 3000);
     };
 
-    const handleStatusChange = async (value) => {
-        if (value !== task.status) {
+    const handleStatusChange = async (newStatus) => {
+        if (newStatus !== task.status) {
             try {
-                await onStatusChange(task.$id, { status: value });
-                setTaskStatus(value);
+                // Just pass the new status value
+                await onStatusChange(newStatus);
+                setTaskStatus(newStatus);
                 
-                if (value === "Done") {
+                if (newStatus === "Done") {
                     await handleTaskCompletion();
                     showNotification("Task completed successfully!");
                 } else {
-                    showNotification(`Status changed to "${value}"`);
+                    showNotification(`Status changed to "${newStatus}"`);
                 }
             } catch (error) {
                 showNotification("Failed to update task", true);
