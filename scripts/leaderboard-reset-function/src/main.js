@@ -49,7 +49,7 @@ export default async ({ req, res, log, error }) => {
     // 1. Fetch all users with their XP logs
     log(`Fetching users with XP logs`);
     const users = await databases.listDocuments(dbId, usersColId, [
-      Query.select(['$id', 'name', 'xpLog'])
+      Query.select(['$id', 'user_id', 'name', 'xpLog'])
     ]);
 
     // 2. Calculate weekly XP for each user
