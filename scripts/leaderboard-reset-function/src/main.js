@@ -57,7 +57,7 @@ export default async ({ req, res, log, error }) => {
       const xpEntries = user.xpLog ? parseXPLog(user.xpLog) : [];
       const weeklyXP = getXPStats(xpEntries);
       return {
-        id: user.$id,
+        id: user.user_id,
         name: user.name || "Unnamed",
         weeklyXP
       };
@@ -90,10 +90,11 @@ export default async ({ req, res, log, error }) => {
           notificationsColId,
           ID.unique(),
           {
-            user_id: user.user_id,
+            user_id: user.id,
             message,
             iconType: 'buddy',
             unread: true,
+            dateTime: new Date().toISOString(),
             createdAt: new Date().toISOString()
           }
         );
