@@ -1,9 +1,20 @@
-import { FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import {View, Text, StyleSheet} from 'react-native';
+import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { StyleSheet, Text, View } from 'react-native';
 
 import colors from '../app/config/colors';
 
 const NotificationItem = ({ notification }) => {
+
+    const formatDisplayDate = (isoString) => {
+        const date = new Date(isoString);
+        
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${day}/${month}/${date.getFullYear()} @ ${hours}:${minutes}`;
+    };
 
     const getIcon = (iconType) => {
         switch (iconType) {
@@ -35,7 +46,7 @@ const NotificationItem = ({ notification }) => {
             </View>
             <View style={{ flex: 1 }}>
                 <Text style={styles.message}>{notification.message}</Text>
-                <Text style={styles.dateTime}>{notification.dateTime}</Text>
+                <Text style={styles.dateTime}>{formatDisplayDate(notification.dateTime)}</Text>
             </View>
             {notification.unread && 
                 <View style={styles.dot} />
