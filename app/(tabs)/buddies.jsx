@@ -26,7 +26,7 @@ const BuddiesScreen = () => {
         const stats = getXPStats(parsedLog);
         return {
             ...user,
-            xp: stats.thisWeek,
+            xp: stats.week,
         };
     });
 

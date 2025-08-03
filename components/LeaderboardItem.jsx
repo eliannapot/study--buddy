@@ -29,7 +29,7 @@ const LeaderboardItem = ({item, index}) => {
                 <Text style={styles.name}>{item.name}</Text>
             </View>
             <View style={styles.xpContainer}>
-                <Text style={styles.xp}>{item.xp == null ? 0 : item.xp} XP</Text>
+                <Text style={styles.xp}>{item.xp ?? 0} XP</Text>
             </View>
         </View>
         </TouchableOpacity>
