@@ -51,7 +51,6 @@ const DashboardScreen = () => {
     };
 
     useEffect(() => {
-        console.log("Dashboard loaded - User:", user, "Loading:", loading);
         // if (!loading && !user) {
         //     router.replace("/auth");
         // }

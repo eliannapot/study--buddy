@@ -34,7 +34,6 @@ export const UsersProvider = ({ children }) => {
             await fetchAllUsers();
             await fetchCurrentUser();
             setInitialLoading(false);
-            console.log("loadInitial UserContext completed");
         }
         loadInitial();
         
@@ -44,7 +43,6 @@ export const UsersProvider = ({ children }) => {
             await fetchAllUsers();
             // await fetchCurrentUser();
             setPolling(false);
-            console.log("Polling for users completed");
         }, 10000); 
         
         //Cleanup on unmount
@@ -64,7 +62,6 @@ export const UsersProvider = ({ children }) => {
 
     const fetchCurrentUser = async () => {
         const response = await userService.getUserByAuthId(user.$id);
-        console.log("fetch current user context response:", response);
         if (response.error) {
             setError(response.error);
             console.warn("Could not fetch current user's document:", response.error);
