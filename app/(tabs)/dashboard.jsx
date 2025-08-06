@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import EventsContainer from '../../components/EventsContainer';
@@ -8,7 +9,6 @@ import XPindicator from '../../components/XPIndicator';
 
 import { getXPStats, parseXPLog } from '../../utils/statisticsUtils';
 
-import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEvents } from '../../contexts/EventContext';
 import { useTasks } from '../../contexts/TaskContext';
@@ -51,10 +51,11 @@ const DashboardScreen = () => {
     };
 
     useEffect(() => {
-        if (!loading && !user) {
-            router.replace('/auth');
-        }
-    }, [loading, user]);
+        console.log("Dashboard loaded - User:", user, "Loading:", loading);
+        // if (!loading && !user) {
+        //     router.replace("/auth");
+        // }
+    }, [user]);
 
     return (
         <FlatList
@@ -65,11 +66,11 @@ const DashboardScreen = () => {
             ListHeaderComponent={
                 <View style={styles.welcomeContainer}>
                     <View style={styles.welcomeMessage}>
-                        <Text style={styles.welcomeText}>Hi {user.name}!</Text>
+                        <Text style={styles.welcomeText}>Hi {user?.name}!</Text>
                         <Text style={styles.welcomeText}>Ready to start the day?</Text>
                     </View>
                     <XPindicator userXP={xpStats.total} candySize={50} />
-                    <StreakIndicator userStreak={currentUserDoc.streak} />
+                    <StreakIndicator userStreak={currentUserDoc?.streak} />
                 </View>
             }
         />

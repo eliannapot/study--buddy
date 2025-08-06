@@ -4,7 +4,6 @@ import { account } from './appwrite';
 import { verifyPasswordWithoutAffectingSession } from './appwriteTempClient'; // Adjust path as needed
 import userService from './userService';
 
-
 //The functions (ex create, get etc) are from the appwrite SDK
 
 const authService = {

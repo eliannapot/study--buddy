@@ -6,10 +6,12 @@ import logo from '../../assets/images/mylogocut.png';
 import colors from '../config/colors';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { useUsers } from '../../contexts/UserContext';
 
 const AuthScreen = () => {
 
     const {login, register} = useAuth();
+    const { fetchCurrentUser } = useUsers();
     const router = useRouter();
 
     // const [username, setUsername] = useState('');
@@ -37,12 +39,17 @@ const AuthScreen = () => {
         } else {
             response = await login(email, password);
             console.log('Logging in...');
+            if (!response?.error) {
+                await fetchCurrentUser(); 
+                console.log('User fetched after login:', response);
+            }
         }
         if (response?.error) {
             Alert.alert('Error', response.error);
             return;
         }
-        router.replace("/dashboard");
+        console.log('Auth done, going to dashboard');
+        router.replace("/dashboard");  
     }
 
     return (

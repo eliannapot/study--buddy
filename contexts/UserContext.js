@@ -25,21 +25,26 @@ export const UsersProvider = ({ children }) => {
     const [polling, setPolling] = useState(false);
 
     useEffect(() => {
-        if (!user?.$id) return;
-
+        if (!user?.$id) {
+            setInitialLoading(false);
+            return;
+        }
+        
         const loadInitial = async () => {
             await fetchAllUsers();
             await fetchCurrentUser();
             setInitialLoading(false);
+            console.log("loadInitial UserContext completed");
         }
         loadInitial();
-
+        
         //Polling every 10 seconds
         const interval = setInterval( async () => {
             setPolling(true);
             await fetchAllUsers();
-            await fetchCurrentUser();
+            // await fetchCurrentUser();
             setPolling(false);
+            console.log("Polling for users completed");
         }, 10000); 
         
         //Cleanup on unmount
@@ -48,6 +53,7 @@ export const UsersProvider = ({ children }) => {
 
     const fetchAllUsers = async () => {
         const response = await userService.getAllUsers();
+        // console.log("fetch all users context response:", response);
         if (response.error) {
             setError(response.error);
             Alert.alert("Error fetching users", response.error);
@@ -58,6 +64,7 @@ export const UsersProvider = ({ children }) => {
 
     const fetchCurrentUser = async () => {
         const response = await userService.getUserByAuthId(user.$id);
+        console.log("fetch current user context response:", response);
         if (response.error) {
             setError(response.error);
             console.warn("Could not fetch current user's document:", response.error);
@@ -152,7 +159,7 @@ export const UsersProvider = ({ children }) => {
                 currentUserDoc,
                 updateCurrentUser,
                 deleteCurrentUser,
-                refetchUserDoc: fetchCurrentUser,
+                fetchCurrentUser,
                 updateUserById,
                 handleUserActivity,
             }}
@@ -161,12 +168,11 @@ export const UsersProvider = ({ children }) => {
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color={colors.primary} />
                 </View>
-            ) : (
+            ) : ( null )}
                 <>
                     {error && <Text style={styles.errorText}>{error}</Text>}
                     {children}
                 </>
-            )}
         </UsersContext.Provider>
     );
 };

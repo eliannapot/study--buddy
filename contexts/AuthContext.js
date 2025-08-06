@@ -1,34 +1,93 @@
 import { createContext, useContext, useEffect, useState } from "react";
-
 import authService from "../services/authService";
 
 const AuthContext = createContext();
 
+let initialized = false;
+
 export const AuthProvider = ({ children }) => {
     
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // const [user, setUser] = useState(() => {
+    //     const savedUser = AsyncStorage.getItem('user');
+    //     return savedUser ? JSON.parse(savedUser) : null;
+    // });
 
-    useEffect(() => { 
-        checkUser();
-    },[] )
+    const [loading, setLoading] = useState(true);
+    
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    // Add this useEffect
+    // useEffect(() => {
+    //     const handleBeforeUnload = () => {
+    //         // Persist user to AsyncStorage when tab closes
+    //         if (user) {
+    //         AsyncStorage.setItem('user', JSON.stringify(user));
+    //         }
+    //     };
+
+    //     window.addEventListener('beforeunload', handleBeforeUnload);
+    //     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    // }, [user]);
+
+    useEffect(() => {
+
+        if (initialized) return; 
+        initialized = true;
+        
+        console.log("Auth Context useEffect - User:", user, "Loading:", loading);
+        
+        const initializeAuth = async () => {
+            await checkUser();
+        };
+        
+        initializeAuth();
+        return() => {
+            console.log("Auth Context cleanup - User:", user, "Loading:", loading);
+        }
+    }, []); 
 
     const checkUser = async () => {
-        setLoading(true);
-        const response = await authService.getUser();
-        if (response?.error) {
+        try {
+            setLoading(true);
+            const response = await authService.getUser();
+            console.log("User check response:", response);
+            // if (response?.error) {
+            //     console.error("Error fetching user:", response.error);
+            //     setUser(null);
+            // } else {
+            //     setUser(response);
+            // }
+            if (response?.$id) {
+                setUser(response);
+                console.log("User set in Auth context:", response);
+            } else {
+                console.log("No user found, setting user to null");
+                setUser(null);
+            }
+        } catch (error) {
+            console.error("Error in checkUser:", error);
             setUser(null);
-        } else {
-            setUser(response);
+        } finally {
+            setLoading(false);
+            setIsInitialized(true);
+            console.log("CheckUser() complete");
         }
-        setLoading(false);
     };
 
     const login = async (email, password) => {
+        console.log("Attempting login...");
         const response = await authService.login(email, password);
+        console.log("Login response:", response);
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         if (response?.error) {
+            console.log("Login failed:", response.error);
             return response;
         }
+            
+        console.log("Login successful, checking user...");
         await checkUser();
         return {success: true};
     };
@@ -77,7 +136,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, verifyPassword, updateUser  }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, isInitialized ,verifyPassword, updateUser  }}>
             {children}
         </AuthContext.Provider>
         

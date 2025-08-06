@@ -20,8 +20,7 @@ export const NotificationProvider = ({ children }) => {
         console.log("NotificationProvider mounted, user:", user?.$id);
         if (user?.$id) {{
             fetchNotifications();
-        }            
-        } else {
+        }} else {
             setLoading(false);
         }
     }, [user]);
