@@ -3,27 +3,40 @@ import { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { useAuth } from "../contexts/AuthContext";
+
 import colors from "./config/colors";
 
 const LandingScreen = () => {
   
-  const { user, loading } = useAuth();
+  const { user, loading, logout, isInitialized } = useAuth();
   const router = useRouter();
   
+  // useEffect(() => {
+
+  //   if (user) {
+  //     console.log("User is logged in:", user);
+  //     // logout();
+  //   };
+  //   console.log("index loading", loading)
+  //   if (!loading) {
+  //     const route = user ? "/dashboard" : "/auth";
+  //     console.log("Navigating to:", route);
+  //     router.replace(route);
+  //   }
+  // }, [user]);
+
+  // useEffect(() => {
+  //   if (!loading) {
+  //     const route = user ? "/(tabs)/dashboard" : "/auth"; // Add (tabs) prefix
+  //     router.replace(route);
+  //   }
+  // }, [user, loading]); 
+
   useEffect(() => {
-      
-    if (loading) return;
-
-    // Redirect to dashboard if user is logged in
-    if (user) {
-      router.replace("/dashboard");
-    }
-    else if (!user) {
-      router.replace("/auth");
-    }
-
-    console.log("User:", user);
-  }, [user, loading]);
+    if (!isInitialized || loading) return; 
+    console.log("UseEffect in INDEX");
+    router.navigate(user ? "/dashboard" : "/auth");
+  }, [user, loading, isInitialized]);
 
   if (loading) {
     return (
@@ -41,33 +54,37 @@ const LandingScreen = () => {
       <TouchableOpacity 
         style={styles.button} 
         onPress={() => { 
-          router.replace("/dashboard")
+          const route = user ? "/dashboard" : "/auth";
+          console.log("Navigating via button to:", route);
+          router.replace(route);
       }}>
-        <Text>Click me to navigate</Text>
+        <Text style={styles.text}>Click me to navigate</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-
 const styles = StyleSheet.create({
-  centeredContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    alignContent: "center",
-    backgroundColor: colors.background,
-  },
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
   },
   button: {
-    backgroundColor: "lightblue",
     padding: 10,
+    backgroundColor: colors.primary,
     borderRadius: 5,
-    marginTop: 10,
+    marginTop: 20,
+  },
+  text: {
+    color: colors.white,
+    fontSize: 16,
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

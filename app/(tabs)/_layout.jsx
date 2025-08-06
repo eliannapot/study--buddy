@@ -65,6 +65,12 @@ export default function TabsLayout() {
         ),
       }}
     >      
+      <Tabs.Screen 
+        name="index" 
+        options={{
+          href: null, // Makes it inaccessible directly
+        }}
+      />
       <Tabs.Screen
         name="buddies"
         options={{
