@@ -42,7 +42,8 @@ export default async ({ req, res, log, error }) => {
   const dbId = process.env.EXPO_PUBLIC_APPWRITE_DB_ID;
   const usersColId = process.env.EXPO_PUBLIC_APPWRITE_COL_USERS_ID;
   const notificationsColId = process.env.EXPO_PUBLIC_APPWRITE_COL_NOTIFICATIONS_ID;
-
+  const badgesColId = process.env.EXPO_PUBLIC_APPWRITE_COL_BADGES_ID;
+  const userBadgesColId = process.env.EXPO_PUBLIC_APPWRITE_COL_USER_BADGES_ID;
   const databases = new Databases(client);
   
   try {
@@ -50,6 +51,12 @@ export default async ({ req, res, log, error }) => {
     log(`Fetching users with XP logs`);
     const users = await databases.listDocuments(dbId, usersColId, [
       Query.select(['$id', 'user_id', 'name', 'xpLog'])
+    ]);
+
+    log(`Fetching leaderboard badges`);
+    const leaderboardBadges = await databases.listDocuments(dbId, badgesColId, [
+      Query.select(['$id', 'title', 'criteriaKey']),
+      Query.startsWith('criteriaKey', 'leaderboard_')
     ]);
 
     // 2. Calculate weekly XP for each user
@@ -110,6 +117,45 @@ export default async ({ req, res, log, error }) => {
       } catch (err) {
         error(`Failed to create notification for user ${user.id}: ${err.message}`);
       }
+
+      // Check for Leaderboard badges
+      if (place<=3) {
+        try {
+          // 1. Fetch user's existing badges
+          const existingUserBadges = await databases.listDocuments(dbId, userBadgesColId, [
+            Query.equal('user_id', user.id),
+            Query.select(['badge_id'])
+          ]);
+
+          // 2. Find the leaderboard badge for this place
+          const badgeToAward = leaderboardBadges.documents.find(
+            badge => badge.criteriaKey === `leaderboard_${place}`
+          );
+
+          // 3. Check if user already has this badge
+          const alreadyHasBadge = existingUserBadges.documents.some(
+            ub => ub.badge_id === badgeToAward?.$id
+          );
+
+          // 4. Award badge if eligible
+          if (badgeToAward && !alreadyHasBadge) {
+            await databases.createDocument(
+              dbId,
+              userBadgesColId,
+              ID.unique(),
+              {
+                user_id: user.id,
+                badge_id: badgeToAward.$id,
+                earned_at: new Date().toISOString()
+              }
+            );
+            log(`Awarded leaderboard badge to ${user.name} for ${place}${suffix} place`);
+          } 
+        } catch (err) {
+          error(`Failed to check/award badges for user ${user.id}: ${err.message}`);
+        }
+      }
+
     }
 
     log(`Total notifications created: ${notificationsCreated.length}`);
