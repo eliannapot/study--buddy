@@ -146,7 +146,7 @@ export default async ({ req, res, log, error }) => {
               {
                 user_id: user.id,
                 badge_id: badgeToAward.$id,
-                earned_at: new Date().toISOString()
+                dateEarned: new Date().toISOString()
               }
             );
             log(`Awarded leaderboard badge to ${user.name} for ${place}${suffix} place`);
